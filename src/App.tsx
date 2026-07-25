@@ -25,10 +25,15 @@ import { useStore } from './store';
 import Claim from './screens/Claim';
 import ClaimDemo from './screens/ClaimDemo';
 import ConnectAgent from './screens/ConnectAgent';
+import ConnectLanding from './screens/flow/ConnectLanding';
 import Controls from './screens/Controls';
 import Coverage from './screens/Coverage';
 import Fleet from './screens/Fleet';
-import GetStarted from './screens/GetStarted';
+import FlowAgents from './screens/flow/FlowAgents';
+import FlowPay from './screens/flow/FlowPay';
+import FlowQuote from './screens/flow/FlowQuote';
+import FlowSign from './screens/flow/FlowSign';
+import FlowTerms from './screens/flow/FlowTerms';
 import Mandate from './screens/Mandate';
 import Pay from './screens/Pay';
 import Policies from './screens/Policies';
@@ -203,7 +208,12 @@ export function AppShell() {
       <UnverifiedBanner />
       <main className="flex-1">
         <Routes>
-          <Route path="/" element={<GetStarted />} />
+          <Route path="/" element={<ConnectLanding />} />
+          <Route path="/flow/agents" element={<FlowAgents />} />
+          <Route path="/flow/quote" element={<FlowQuote />} />
+          <Route path="/flow/pay" element={<FlowPay />} />
+          <Route path="/flow/terms/:page" element={<FlowTerms />} />
+          <Route path="/flow/sign" element={<FlowSign />} />
           <Route path="/verify" element={<VerifyCompany />} />
           <Route path="/review" element={<PrincipalReview />} />
           <Route path="/connect" element={<ConnectAgent />} />

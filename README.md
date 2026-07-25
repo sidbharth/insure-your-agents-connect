@@ -1,4 +1,6 @@
-# AgentConnect Insurance
+# AgentConnect Insurance — connect flow variant
+
+A variant of [insure-your-agents](https://github.com/sidbharth/insure-your-agents) built around a single connect flow: a WalletConnect-style card connects named agents (`*.sidb.near`), the platform reads their configurations, prices an overall quote, and cover binds after a page-by-page agreement to Coverages A–F. Payment is upfront today; pay-with-stake is the next iteration.
 
 A demonstration of an insurance product for AI agents that move money. The application implements the Agent Insurance Framework, prices premiums in $NEAR, and covers the full life of a policy: enrollment, pricing, coverage, claims, and denial.
 

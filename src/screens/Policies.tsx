@@ -233,7 +233,7 @@ export default function Policies() {
         </div>
         <div className="flex gap-2">
           <Link
-            to="/connect"
+            to="/"
             className="rounded-lg border border-line bg-panel px-3.5 py-2 text-sm font-semibold text-ink"
           >
             Add agent

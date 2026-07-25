@@ -48,13 +48,13 @@ describe('Appendix B fleet roll-up', () => {
 
   it('has 12 agents, every cap $50,000, in the fixed import order', () => {
     expect(ALL_AGENT_SPECS).toHaveLength(12);
-    expect(WIZARD_AGENT.name).toBe('Procurement-Bot');
+    expect(WIZARD_AGENT.name).toBe('procurement.sidb.near');
     expect(FLEET_IMPORT_ORDER.map((s) => s.name)).toEqual([
-      'Legacy-Bot',
+      'legacy.sidb.near',
       'Relay-Bot',
-      'Payables-Bot',
-      'Refunds-Bot',
-      'Treasury-Bot',
+      'payables.sidb.near',
+      'refunds.sidb.near',
+      'treasury.sidb.near',
       'Vendor-Bot',
       'Settle-Bot',
       'Invoice-Bot',
@@ -104,7 +104,7 @@ describe('Appendix B concentration crossings (prospective post-enrollment book)'
 
   it('Procurement-Bot takes Helios to 2,140,000/5,550,000 = 38.6%', () => {
     const rows = walkShares();
-    expect(rows[0].name).toBe('Procurement-Bot');
+    expect(rows[0].name).toBe('procurement.sidb.near');
     expect(rows[0].prospectiveHeliosShare).toBeCloseTo(2_140_000 / 5_550_000, 10);
     expect(rows[0].prospectiveHeliosShare).toBeCloseTo(0.3856, 4);
   });
@@ -139,10 +139,10 @@ describe('Appendix B concentration crossings (prospective post-enrollment book)'
 describe('seed integrity', () => {
   it('Legacy-Bot has attestation.available === false (REQ-7.3.3) and Coverage B excluded', () => {
     const seed = createSeedState();
-    const legacy = seed.agents.find((a) => a.name === 'Legacy-Bot')!;
+    const legacy = seed.agents.find((a) => a.name === 'legacy.sidb.near')!;
     expect(legacy.attestation.available).toBe(false);
     expect(legacy.controls.tier2.attestation).toBe(false);
-    const spec = FLEET_IMPORT_ORDER.find((s) => s.name === 'Legacy-Bot')!;
+    const spec = FLEET_IMPORT_ORDER.find((s) => s.name === 'legacy.sidb.near')!;
     expect(spec.seedRatePct).toBe(1.2);
     expect(spec.coverageBExcluded).toBe(true);
   });

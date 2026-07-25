@@ -49,7 +49,7 @@ describe('7.8 — summary phase', () => {
     renderPay();
     expect(screen.getByTestId('pay-framing')).toBeInTheDocument();
     const row = screen.getByTestId(`pay-row-${WIZARD_AGENT.id}`);
-    expect(row).toHaveTextContent('Procurement-Bot');
+    expect(row).toHaveTextContent('procurement.sidb.near');
     expect(row).toHaveTextContent('0.6%');
     expect(row).toHaveTextContent('$300');
     expect(row).toHaveTextContent('Ready to bind');
@@ -189,7 +189,7 @@ describe('7.8 — pay and activate (REQ-7.8.2, AC-7)', () => {
     );
     fireEvent.click(screen.getByTestId('view-policy-schedule'));
     const schedule = screen.getByTestId('policy-schedule');
-    expect(schedule).toHaveTextContent('Procurement-Bot');
+    expect(schedule).toHaveTextContent('procurement.sidb.near');
     expect(schedule).toHaveTextContent('0.6%');
     expect(schedule).toHaveTextContent('$300');
     expect(schedule).toHaveTextContent('1 $NEAR = $3.25'); // conversion rate at payment

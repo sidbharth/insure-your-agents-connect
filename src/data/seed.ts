@@ -161,7 +161,7 @@ export interface SeedAgentSpec {
 /** Procurement-Bot: connected in the wizard, enrolled FIRST (before imports). */
 export const WIZARD_AGENT: SeedAgentSpec = {
   id: 'procurement-bot',
-  name: 'Procurement-Bot',
+  name: 'procurement.sidb.near',
   harnessKey: HELIOS,
   attestationAvailable: true,
   seedRatePct: 0.6,
@@ -176,11 +176,11 @@ export const WIZARD_AGENT: SeedAgentSpec = {
  * the four after it.
  */
 export const FLEET_IMPORT_ORDER: SeedAgentSpec[] = [
-  { id: 'legacy-bot', name: 'Legacy-Bot', harnessKey: ATLAS, attestationAvailable: false, seedRatePct: 1.2, concentrationTag: false, coverageBExcluded: true },
+  { id: 'legacy-bot', name: 'legacy.sidb.near', harnessKey: ATLAS, attestationAvailable: false, seedRatePct: 1.2, concentrationTag: false, coverageBExcluded: true },
   { id: 'relay-bot', name: 'Relay-Bot', harnessKey: BEACON, attestationAvailable: true, seedRatePct: 0.6, concentrationTag: false, coverageBExcluded: false },
-  { id: 'payables-bot', name: 'Payables-Bot', harnessKey: HELIOS, attestationAvailable: true, seedRatePct: 0.6, concentrationTag: false, coverageBExcluded: false },
-  { id: 'refunds-bot', name: 'Refunds-Bot', harnessKey: HELIOS, attestationAvailable: true, seedRatePct: 0.6, concentrationTag: false, coverageBExcluded: false },
-  { id: 'treasury-bot', name: 'Treasury-Bot', harnessKey: HELIOS, attestationAvailable: true, seedRatePct: 0.6, concentrationTag: false, coverageBExcluded: false },
+  { id: 'payables-bot', name: 'payables.sidb.near', harnessKey: HELIOS, attestationAvailable: true, seedRatePct: 0.6, concentrationTag: false, coverageBExcluded: false },
+  { id: 'refunds-bot', name: 'refunds.sidb.near', harnessKey: HELIOS, attestationAvailable: true, seedRatePct: 0.6, concentrationTag: false, coverageBExcluded: false },
+  { id: 'treasury-bot', name: 'treasury.sidb.near', harnessKey: HELIOS, attestationAvailable: true, seedRatePct: 0.6, concentrationTag: false, coverageBExcluded: false },
   { id: 'vendor-bot', name: 'Vendor-Bot', harnessKey: HELIOS, attestationAvailable: true, seedRatePct: 0.6, concentrationTag: false, coverageBExcluded: false },
   { id: 'settle-bot', name: 'Settle-Bot', harnessKey: HELIOS, attestationAvailable: true, seedRatePct: 0.7, concentrationTag: true, coverageBExcluded: false },
   { id: 'invoice-bot', name: 'Invoice-Bot', harnessKey: HELIOS, attestationAvailable: true, seedRatePct: 0.7, concentrationTag: true, coverageBExcluded: false },

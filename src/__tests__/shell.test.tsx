@@ -42,7 +42,7 @@ describe('app shell', () => {
   });
 
   const ROUTES: [string, string][] = [
-    ['/', 'screen-GetStarted'],
+    ['/', 'screen-ConnectLanding'],
     ['/verify', 'screen-VerifyCompany'],
     ['/connect', 'screen-ConnectAgent'],
     ['/mandate', 'screen-Mandate'],

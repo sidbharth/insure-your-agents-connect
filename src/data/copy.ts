@@ -423,6 +423,87 @@ export const CLAIM_DEMO_SCENARIOS: ClaimDemoScenarioCopy[] = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// Connect flow (this variant's single purchase flow)
+//
+// Landing card → agent picker modal → processing → connected agents →
+// quote → payment choice → coverage disclosures A to F → signature.
+// All user-facing flow strings live here so the flow copy test can enforce
+// the punctuation rules (no colons, semicolons, or dashes in this copy).
+// ---------------------------------------------------------------------------
+
+export const FLOW_COPY = {
+  landingHeading: 'Insurance for the agents that move your money.',
+  landingSub: 'Connect your agents to see what cover they qualify for.',
+  connectCard: 'Connect with AgentConnect',
+  modalTitle: 'Connect your agents',
+  modalSub: 'Select the agents to bring under cover.',
+  modalCancel: 'Cancel',
+  modalConnect: (n: number) => (n === 1 ? 'Connect 1 agent' : `Connect ${n} agents`),
+  modalConnectNone: 'Select an agent',
+  processingTitle: 'Reading agent configurations',
+  processingSteps: [
+    'Reading configuration hashes…',
+    'Fetching harness inventories…',
+    'Freezing tool manifests…',
+    'Checking tier 1 controls…',
+    'Pricing controls…',
+  ],
+  agentsTitle: 'Connected agents',
+  agentsSub: 'AgentConnect read each agent’s configuration. These details set the terms of cover.',
+  agentsContinue: 'Continue to quote →',
+  agentsLabels: {
+    harness: 'Harness',
+    model: 'Model endpoint',
+    hash: 'Configuration hash',
+    tools: 'Tools',
+    controls: 'Controls',
+    cap: 'Cap',
+  },
+  agentsAudited: 'audited',
+  agentsNoAttestation: 'No attestation',
+  quoteTitle: 'Your quote',
+  quoteSub: 'Cover and premium are derived from each agent’s controls and cap.',
+  quoteTotalCover: 'Total cover',
+  quoteAnnualPremium: 'Annual premium',
+  quoteAccept: 'Accept quote →',
+  quoteBExcluded: 'Coverage B excluded',
+  payTitle: 'Payment',
+  paySub: 'Choose how the annual premium is settled.',
+  payUpfrontTitle: 'Pay upfront',
+  payUpfrontBody: 'The annual premium is settled now in $NEAR at the live rate.',
+  payStakeTitle: 'Pay with stake',
+  payStakeBody: 'The premium is funded from staking rewards over the policy year.',
+  payChoose: 'Choose →',
+  termsProgress: (n: number) => `Part ${n} of 6`,
+  termsSub: 'Review and agree to each coverage before signing.',
+  termsWhatItPays: 'What it pays',
+  termsKeyCondition: 'Key condition',
+  termsLimit: 'Limit for each event',
+  termsAgree: 'Agree and continue →',
+  signTitle: 'Signature',
+  signSub: 'Review the terms of cover and sign to bind them.',
+  signStatement:
+    'By signing you agree to Coverages A through F as presented. Cover starts the moment you sign.',
+  signButton: 'Sign and start cover',
+  signTheaterTitle: 'Binding cover',
+  signSteps: [
+    'Recording signatures…',
+    'Collecting the premium…',
+    'Attaching cover…',
+  ],
+  signLabels: {
+    agents: 'Agents',
+    cover: 'Total cover',
+    premium: 'Annual premium',
+    payment: 'Payment',
+  },
+  paymentMethodNames: {
+    upfront: 'Upfront',
+    stake: 'With stake',
+  },
+} as const;
+
 /** Opening feed line of the detection playback, per scenario. */
 export const CLAIM_DEMO_FEED_EVENT: Record<ScenarioId, string> = {
   'S-03': 'The agent initiated a transfer above the cap and the cap check did not fire.',

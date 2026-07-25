@@ -44,42 +44,9 @@ afterEach(() => {
 });
 
 // ---------------------------------------------------------------------------
-// 7.1 Get started
+// 7.1 Landing — this variant replaces Get started with the connect flow
+// landing (covered in flow.test.tsx); the shell test asserts the route.
 // ---------------------------------------------------------------------------
-
-describe('7.1 Get started', () => {
-  it('renders the positioning line, step strip, and footnote — no signup', () => {
-    renderAt('/');
-    expect(screen.getByTestId('screen-GetStarted')).toBeInTheDocument();
-    expect(screen.getByTestId('step-strip')).toBeInTheDocument();
-    expect(screen.getByTestId('role-cards')).toBeInTheDocument();
-    expect(screen.queryByLabelText(/password/i)).not.toBeInTheDocument();
-  });
-
-  it('Get started navigates to the company step', () => {
-    renderAt('/');
-    fireEvent.click(screen.getByTestId('get-started'));
-    expect(screen.getByTestId('screen-VerifyCompany')).toBeInTheDocument();
-  });
-
-  it('renames the company through the store', () => {
-    renderAt('/');
-    fireEvent.click(screen.getByTestId('company-name'));
-    const input = screen.getByTestId('company-name-input');
-    fireEvent.change(input, { target: { value: 'Acme Autonomy Ltd' } });
-    fireEvent.keyDown(input, { key: 'Enter' });
-    expect(useStore.getState().operator.name).toBe('Acme Autonomy Ltd');
-  });
-
-  it('an emptied company name falls back to the default', () => {
-    renderAt('/');
-    fireEvent.click(screen.getByTestId('company-name'));
-    const input = screen.getByTestId('company-name-input');
-    fireEvent.change(input, { target: { value: '   ' } });
-    fireEvent.keyDown(input, { key: 'Enter' });
-    expect(useStore.getState().operator.name).toBe('Acme, Inc');
-  });
-});
 
 // ---------------------------------------------------------------------------
 // 7.2 Verify your company
