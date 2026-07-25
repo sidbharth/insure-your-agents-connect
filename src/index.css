@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    /* Overscroll bounce reveals the area beyond the page: paint it dark
+       behind the header at the top and canvas at the bottom, and suppress
+       the spring where the browser supports it. */
+    background: linear-gradient(to bottom, theme('colors.ink') 50%, theme('colors.canvas') 50%);
+    overscroll-behavior-y: none;
+  }
+  body {
+    @apply font-sans text-base text-body bg-canvas antialiased;
+    overscroll-behavior-y: none;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply text-ink font-semibold tracking-tight;
+  }
+}
+
+@layer utilities {
+  /* tabular numerals for every money / rate figure (design contract) */
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+}
