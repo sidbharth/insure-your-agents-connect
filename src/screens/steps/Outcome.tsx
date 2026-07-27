@@ -157,7 +157,7 @@ export default function Outcome({ claim, incident, onBack }: OutcomeProps) {
             ✓
           </span>
           <h2 className="text-md font-bold text-good" data-testid="outcome-verdict">
-            Covered: payment approved
+            Covered. Payment approved
           </h2>
           <span className="ml-auto">
             <SimulatedBadge />
@@ -168,10 +168,10 @@ export default function Outcome({ claim, incident, onBack }: OutcomeProps) {
           <div className="flex items-baseline justify-between gap-4 text-sm">
             <span className="text-muted">
               {incident.scenarioId === 'S-17'
-                ? 'Investigation and response costs (Coverage F)'
+                ? 'Investigation and response costs (Coverage E)'
                 : incident.scenarioId === 'S-03'
-                  ? 'Covered quantum: the excess over the mandate cap (Coverage D)'
-                  : 'Loss: net assets out'}
+                  ? 'The amount above the cap that should have been blocked (Coverage D)'
+                  : 'Money that left'}
             </span>
             <span className="num font-mono font-semibold text-ink" data-testid="outcome-loss">
               {formatUsd(math.coveredQuantumUsd, { maxFractionDigits: 2 })}
@@ -190,8 +190,8 @@ export default function Outcome({ claim, incident, onBack }: OutcomeProps) {
                 <span className="ml-2 rounded-md border border-good-line bg-good-bg px-1.5 py-0.5 text-2xs font-semibold text-good">
                   waived
                   {incident.scenarioId === 'S-03'
-                    ? ': the guardrail passed its latest scheduled verification'
-                    : ': near-miss, no net asset loss'}
+                    ? ' · the guardrail passed its latest check'
+                    : ' · near miss with no loss'}
                 </span>
               )}
             </span>
@@ -322,10 +322,10 @@ function DenialLetter({ claim, incident, result, conditionDenial, determinedAt, 
   const modelConduct = incident.scenarioId === 'S-24' && !conditionDenial;
   const bExcluded = !conditionDenial && !modelConduct; // S-09 without attestation
   const verdictLabel = conditionDenial
-    ? 'Not payable: condition precedent'
+    ? 'Not payable. Verification was not current'
     : modelConduct
-      ? 'Not covered: model conduct'
-      : 'Not covered: Coverage B excluded';
+      ? 'Not covered. The model acted on its own'
+      : 'Not covered. Coverage B was excluded';
 
 
   return (

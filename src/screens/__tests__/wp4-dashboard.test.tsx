@@ -91,7 +91,7 @@ describe('AC-12 — suspension and cure', () => {
     );
     // the strip carries the reassurance copy
     expect(within(row).getByTestId('suspension-strip').textContent).toMatch(
-      /prior events remain claimable/i,
+      /earlier events remain claimable/i,
     );
     // the other agent's row is unaffected
     const other = screen.getByTestId('policy-row-relay-bot');

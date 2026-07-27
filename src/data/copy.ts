@@ -213,10 +213,10 @@ export const CLAIM_EMPTY_STATE =
   'No incidents reported on your fleet. Detected incidents appear here with their records attached.';
 
 export const SUSPENSION_COPY =
-  'During suspension, new events are not covered. Prior events remain claimable. Other agents are unaffected.';
+  'During suspension new events are not covered, while earlier events remain claimable and other agents stay unaffected.';
 
 export const NEAR_MISS_CREDIT_HOVER =
-  'Reporting a near-miss within 7 days earns a renewal credit and improves programme loss data.';
+  'Reporting a near miss within 7 days earns a renewal credit and improves the programme’s loss data.';
 
 // The twelve evidence items (framework Appendix 2), labels shared by all WPs.
 export const EVIDENCE_ITEM_LABELS: Record<number, string> = {
@@ -239,18 +239,18 @@ export const EVIDENCE_ITEM_LABELS: Record<number, string> = {
 // ---------------------------------------------------------------------------
 
 export const DENIAL_MODEL_CONDUCT = {
-  title: 'Determination: not covered (model conduct)',
+  title: 'Determination. This claim is not covered',
   body:
-    'We reviewed the attested inputs and outputs for this event. They show no adversarial content, no compromised tool, and no spoofed instruction channel: the agent paid a real, whitelisted payee, within its cap, because the model was simply wrong. This cover protects what your agent is allowed to do and the safety machinery around it, not the model\'s judgment. Model error, downtime, and training quality are excluded model conduct.',
+    'We reviewed the tamper proof records of what the agent saw and did for this event. They show no planted instructions, no compromised tool, and no impersonation of your channel. The agent paid a real, approved payee within its limit because the model was simply wrong, and a loss that comes only from the model’s own reasoning is not covered. This cover protects what your agent is allowed to do and the safety machinery around it, not the model’s judgment.',
   counterfactual:
-    'Had the attested inputs shown crafted adversarial content, this would have been Coverage B.',
+    'Had those records shown planted adversarial content, this loss would have been covered under Coverage B.',
   clause: 'Model Conduct Boundary',
 };
 
 export const DENIAL_CONDITION_PRECEDENT = {
-  title: 'Determination: not payable (condition precedent)',
+  title: 'Determination. This claim is not payable',
   body:
-    'No claim is payable for an event that occurred while verification was not current. Verifying now protects future events.',
+    'No claim is payable for an event that happened while verification was not current. Verifying now protects future events.',
   forwardAction: 'Complete verification',
   clause: 'T3.4',
 };
@@ -308,7 +308,7 @@ export const CLAIM_DEMO_COPY = {
   activationSteps: [
     'Countersigning the mandate…',
     'Pricing the controls…',
-    'Collecting the annual premium…',
+    'Collecting the yearly price…',
     'Activating cover…',
   ],
   run: 'Run this incident →',
@@ -318,13 +318,13 @@ export const CLAIM_DEMO_COPY = {
   detectionTitle: 'Incident detected',
   feedTitle: 'Monitoring record',
   alertLine: 'Anomaly monitoring raised the first alert.',
-  killLine: 'Kill switch engaged. The agent halted.',
-  freezeLine: 'Affected whitelist entries frozen.',
-  rotateLine: 'Implicated signing credentials rotated.',
-  lossLine: (amount: string) => `Gross loss quantified at ${amount}.`,
+  killLine: 'The kill switch engaged and halted the agent.',
+  freezeLine: 'The affected whitelist entries were frozen.',
+  rotateLine: 'The implicated signing credentials were rotated.',
+  lossLine: (amount: string) => `The gross loss was quantified at ${amount}.`,
   investigationLine: (amount: string) =>
-    `No value moved. Investigation costs recorded at ${amount}.`,
-  recordLine: 'Incident record assembled and preserved.',
+    `No value moved, and investigation costs of ${amount} were recorded.`,
+  recordLine: 'The incident record was assembled and preserved.',
   fileClaim: 'File the claim →',
   chooseAnother: 'Choose a different incident',
   summaryLabels: {
@@ -512,7 +512,7 @@ export const CLAIM_DEMO_SCENARIOS: ClaimDemoScenarioCopy[] = [
     scenarioId: 'S-03',
     title: 'Cap module failure',
     summary:
-      'A transfer cleared above the cap because the cap check failed to fire. The policy pays the slice the guardrail should have stopped, and the deductible is waived because the guardrail had passed its latest test.',
+      'A transfer cleared above the cap because the cap check failed to fire. We pay the slice the guardrail should have stopped, and your share is waived because the guardrail had passed its latest test.',
     outcome: 'Pays under Coverage D',
     outcomeKind: 'paid',
   },
@@ -520,7 +520,7 @@ export const CLAIM_DEMO_SCENARIOS: ClaimDemoScenarioCopy[] = [
     scenarioId: 'S-09',
     title: 'Prompt injection',
     summary:
-      'A poisoned catalogue page steered the agent into paying an attacker while it stayed inside every limit. Attested records prove the manipulation, so the compromise is covered.',
+      'A poisoned catalogue page steered the agent into paying an attacker while it stayed inside every limit. The tamper proof logs prove the manipulation, so the loss is covered.',
     outcome: 'Pays under Coverage B',
     outcomeKind: 'paid',
   },
@@ -544,7 +544,7 @@ export const CLAIM_DEMO_SCENARIOS: ClaimDemoScenarioCopy[] = [
     scenarioId: 'S-24',
     title: 'Hallucinated invoice',
     summary:
-      'The agent paid an invoice that only ever existed in its own output. Clean attested inputs prove nothing tricked it, so the loss is excluded as model conduct.',
+      'The agent paid an invoice that only ever existed in its own output. Clean tamper proof logs show nothing tricked it, so the loss is not covered because the model got it wrong on its own.',
     outcome: 'Ends in a denial',
     outcomeKind: 'denied',
   },

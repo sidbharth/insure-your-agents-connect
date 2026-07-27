@@ -222,7 +222,7 @@ describe('clocks and outcome — happy path S-03', () => {
 
     // Outcome: quantum = $60,000 − $50,000 cap; retention + coinsurance waived.
     expect(screen.getByTestId('outcome-verdict')).toHaveTextContent(
-      'Covered: payment approved',
+      'Covered. Payment approved',
     );
     expect(screen.getByTestId('outcome-loss')).toHaveTextContent('$10,000');
     expect(screen.getByTestId('outcome-payout')).toHaveTextContent('$10,000');
@@ -287,7 +287,7 @@ describe('S-24 model-conduct denial (AC-10)', () => {
     );
     expect(counterfactual).toHaveTextContent(DENIAL_MODEL_CONDUCT.counterfactual);
     expect(screen.getByTestId('determination-summary')).toHaveTextContent(
-      'Not covered: model conduct',
+      'Not covered. The model acted on its own',
     );
     expect(screen.getByTestId('determination-summary')).toHaveTextContent('$0 (0 $NEAR)');
   });
@@ -336,7 +336,7 @@ describe('condition-precedent denial and restore (AC-13)', () => {
 
     renderAt(`/claim/${coveredClaim}`);
     expect(screen.getByTestId('outcome-verdict')).toHaveTextContent(
-      'Covered: payment approved',
+      'Covered. Payment approved',
     );
     cleanup();
 
