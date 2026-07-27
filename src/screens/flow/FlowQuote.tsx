@@ -3,57 +3,22 @@
  *
  * Total cover and annual premium from the enrollments priced at connect
  * time. Each agent row expands into the frozen rate breakdown that produced
- * its premium (base rate, surcharges for skipped controls, loadings). Below
- * the rows, example configurations are priced LIVE through the same engine
- * (rate schedule per the programme's published ladder), including one that
- * is declined outright.
+ * its premium (base rate, surcharges for skipped controls, loadings). The
+ * connectable agents carry deliberately distinct control profiles, so the
+ * rows themselves demonstrate the rate ladder.
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FLOW_COPY } from '../../data/copy';
-import { SEED_CAP_USD } from '../../data/seed';
 import { formatPct, formatUsd } from '../../lib/money';
-import { priceAgent, type PricingResult } from '../../lib/pricing';
 import { useStore } from '../../store';
-import type { RateLine, Tier1Gate, Tier2Control } from '../../store/types';
-import { TIER1_GATES, TIER2_CONTROLS } from '../../store/types';
+import type { RateLine } from '../../store/types';
 import {
   capUsdFor,
   coverageBExcluded,
   enrollmentRatePct,
 } from '../purchase/enroll';
 import { getSelectedAgentIds } from './flowState';
-
-/** Illustrative configurations, priced live. Exported for the copy test. */
-export const QUOTE_EXAMPLES: {
-  key: string;
-  label: string;
-  tier2Off: Tier2Control[];
-  gateOff?: Tier1Gate;
-}[] = [
-  { key: 'compliant', label: 'Every control in place', tier2Off: [] },
-  { key: 'no-attestation', label: 'Without TEE attestation', tier2Off: ['attestation'] },
-  { key: 'no-hitl', label: 'Without human approval above the threshold', tier2Off: ['hitl'] },
-  {
-    key: 'no-timelock-killswitch',
-    label: 'Without timelock and kill switch',
-    tier2Off: ['timelock', 'killSwitch'],
-  },
-  {
-    key: 'ceiling',
-    label: 'Every optional control skipped',
-    tier2Off: [...TIER2_CONTROLS],
-  },
-  {
-    key: 'declined',
-    label: 'A required gate off',
-    tier2Off: [],
-    gateOff: 'actionLogging',
-  },
-];
-
-const allOn = <K extends string>(keys: readonly K[]): Record<K, boolean> =>
-  Object.fromEntries(keys.map((k) => [k, true])) as Record<K, boolean>;
 
 function RateBreakdownPanel({
   lines,
@@ -106,7 +71,6 @@ export default function FlowQuote() {
   const navigate = useNavigate();
   const selected = getSelectedAgentIds();
   const [expandedAgent, setExpandedAgent] = useState<string | undefined>();
-  const [expandedExample, setExpandedExample] = useState<string | undefined>();
 
   useEffect(() => {
     if (selected.length === 0) navigate('/', { replace: true });
@@ -123,27 +87,6 @@ export default function FlowQuote() {
       (r): r is { agent: NonNullable<typeof r.agent>; enrollment: NonNullable<typeof r.enrollment> } =>
         r.agent !== undefined && r.enrollment !== undefined,
     );
-
-  const capUsd = Math.max(SEED_CAP_USD, ...selected.map((id) => capUsdFor(state, id)));
-
-  const examples = useMemo(
-    () =>
-      QUOTE_EXAMPLES.map((ex) => {
-        const tier1 = allOn(TIER1_GATES);
-        if (ex.gateOff !== undefined) tier1[ex.gateOff] = false;
-        const tier2 = allOn(TIER2_CONTROLS);
-        for (const control of ex.tier2Off) tier2[control] = false;
-        const result: PricingResult = priceAgent({
-          capUsd,
-          tier1,
-          tier2,
-          openSet: false,
-          concentrationLoading: false,
-        });
-        return { ...ex, result };
-      }),
-    [capUsd],
-  );
 
   if (selected.length === 0) return null;
 
@@ -232,71 +175,6 @@ export default function FlowQuote() {
         >
           {FLOW_COPY.quoteAccept}
         </button>
-      </div>
-
-      <div className="mt-8" data-testid="quote-examples">
-        <h2 className="text-md font-semibold text-ink">{FLOW_COPY.examplesTitle}</h2>
-        <p className="mt-1 max-w-2xl text-sm text-muted">
-          {FLOW_COPY.examplesSub(formatUsd(capUsd))}
-        </p>
-        <div className="mt-3 rounded-card border border-line bg-panel shadow-card">
-          <ul className="divide-y divide-line-soft">
-            {examples.map((ex) => {
-              const open = expandedExample === ex.key;
-              const quoted = ex.result.kind === 'quoted' ? ex.result : undefined;
-              return (
-                <li key={ex.key}>
-                  <button
-                    type="button"
-                    data-testid={`example-row-${ex.key}`}
-                    aria-expanded={open}
-                    onClick={() => setExpandedExample(open ? undefined : ex.key)}
-                    className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 text-left"
-                  >
-                    <span className="flex-none text-2xs text-faint">{open ? '▾' : '▸'}</span>
-                    <span className="min-w-0 flex-1 text-sm font-semibold text-ink">
-                      {ex.label}
-                    </span>
-                    {quoted?.flags.coverageBExcluded && (
-                      <span className="inline-flex rounded border border-bad-line bg-bad-bg px-1.5 py-px text-2xs font-semibold text-bad">
-                        {FLOW_COPY.quoteBExcluded}
-                      </span>
-                    )}
-                    {quoted !== undefined ? (
-                      <>
-                        <span className="num text-xs text-muted">{quoted.totalRatePct}%</span>
-                        <span className="num w-20 text-right text-sm font-semibold text-ink">
-                          {formatUsd(quoted.premiumUsd)}
-                        </span>
-                      </>
-                    ) : (
-                      <span className="inline-flex rounded border border-bad-line bg-bad-bg px-1.5 py-px text-2xs font-semibold text-bad">
-                        {FLOW_COPY.exampleDeclined}
-                      </span>
-                    )}
-                  </button>
-                  {open &&
-                    (quoted !== undefined ? (
-                      <RateBreakdownPanel
-                        lines={quoted.breakdown}
-                        totalPct={quoted.totalRatePct}
-                        capUsd={capUsd}
-                        premiumUsd={quoted.premiumUsd}
-                        testId={`example-breakdown-${ex.key}`}
-                      />
-                    ) : (
-                      <div
-                        data-testid={`example-breakdown-${ex.key}`}
-                        className="border-t border-line-soft bg-canvas px-4 py-3 text-xs text-muted"
-                      >
-                        {FLOW_COPY.exampleDeclinedNote}
-                      </div>
-                    ))}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
       </div>
     </div>
   );

@@ -11,6 +11,8 @@ import { LatencyTheater } from '../../components/LatencyTheater';
 import { SimulatedBadge } from '../../components/SimulatedBadge';
 import { FLOW_COPY, POSITIONING_LINE } from '../../data/copy';
 import { useStore } from '../../store';
+import type { Tier2Control } from '../../store/types';
+import { TIER2_CONTROLS } from '../../store/types';
 import { enrollAgent, prepareImportedAgent } from '../purchase/enroll';
 import {
   CONNECTABLE_AGENT_IDS,
@@ -19,6 +21,30 @@ import {
 } from './flowState';
 
 type Phase = 'idle' | 'picking' | 'processing';
+
+/**
+ * Each connectable agent carries a distinct, real control profile so the
+ * quote itself demonstrates the rate ladder: a clean baseline, single
+ * skipped controls, the full ceiling, and (via the seed) a missing
+ * attestation. Profiles are applied through the store at connect time, so
+ * pricing, the agents screen, and any later claim all read the same state.
+ */
+const AGENT_CONTROL_PROFILES: Record<string, readonly Tier2Control[]> = {
+  'procurement-bot': [],
+  'payables-bot': ['hitl'],
+  'treasury-bot': ['timelock', 'killSwitch'],
+  'refunds-bot': TIER2_CONTROLS,
+  'legacy-bot': [],
+};
+
+function applyControlProfile(agentId: string): void {
+  const s = useStore.getState();
+  const agent = s.agents.find((a) => a.id === agentId);
+  if (agent === undefined) return;
+  for (const control of AGENT_CONTROL_PROFILES[agentId] ?? []) {
+    if (agent.controls.tier2[control]) s.setTier2(agentId, control, false);
+  }
+}
 
 export default function ConnectLanding() {
   const agents = useStore((s) => s.agents);
@@ -48,9 +74,10 @@ export default function ConnectLanding() {
     const ids = CONNECTABLE_AGENT_IDS.filter((id) => ticked.has(id));
     if (ids.length === 0) return;
     setSelectedAgentIds(ids);
-    // Real machinery: countersigned mandate + priced enrollment per agent.
-    // Activation (payment) happens at signing, not here.
+    // Real machinery: control profile + countersigned mandate + priced
+    // enrollment per agent. Activation (payment) happens at signing.
     for (const id of ids) {
+      applyControlProfile(id);
       prepareImportedAgent(id);
       enrollAgent(id);
     }

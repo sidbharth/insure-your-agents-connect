@@ -20,7 +20,6 @@ import { setLatencyTestMode } from '../../lib/latency';
 import { useStore } from '../../store';
 import { setPriceFetchFn } from '../../store/priceFeed';
 import { CONNECTABLE_AGENT_IDS, resetFlowState } from '../flow/flowState';
-import { QUOTE_EXAMPLES } from '../flow/FlowQuote';
 
 function renderAt(path: string) {
   return render(
@@ -116,24 +115,23 @@ describe('quote', () => {
     expect(legacy).toHaveTextContent('1.2% × $50,000 = $600');
   });
 
-  it('prices example configurations live, including a declined one', async () => {
-    await connectAgents(['procurement-bot']);
+  it('the agents carry distinct control profiles that price differently', async () => {
+    await connectAgents(['payables-bot', 'treasury-bot', 'refunds-bot']);
     fireEvent.click(screen.getByTestId('flow-agents-continue'));
 
-    expect(screen.getByTestId('quote-examples')).toBeInTheDocument();
-    // Ladder ceiling: base 0.6 + all surcharges clamps at 3.0% = $1,500.
-    fireEvent.click(screen.getByTestId('example-row-ceiling'));
-    expect(screen.getByTestId('example-breakdown-ceiling')).toHaveTextContent(
-      '3.0% × $50,000 = $1,500',
-    );
-    // A tier-1 gate off is declined outright.
-    expect(screen.getByTestId('example-row-declined')).toHaveTextContent(
-      FLOW_COPY.exampleDeclined,
-    );
-    fireEvent.click(screen.getByTestId('example-row-declined'));
-    expect(screen.getByTestId('example-breakdown-declined')).toHaveTextContent(
-      FLOW_COPY.exampleDeclinedNote,
-    );
+    // payables skips human approval (0.9%), treasury skips timelock and
+    // kill switch (1.1%), refunds skips every optional control (ceiling).
+    expect(screen.getByTestId('quote-row-payables-bot')).toHaveTextContent('0.9%');
+    expect(screen.getByTestId('quote-row-payables-bot')).toHaveTextContent('$450');
+    expect(screen.getByTestId('quote-row-treasury-bot')).toHaveTextContent('1.1%');
+    expect(screen.getByTestId('quote-row-treasury-bot')).toHaveTextContent('$550');
+    expect(screen.getByTestId('quote-row-refunds-bot')).toHaveTextContent('$1,500');
+
+    fireEvent.click(screen.getByTestId('quote-row-refunds-bot'));
+    const ceiling = screen.getByTestId('quote-breakdown-refunds-bot');
+    expect(ceiling).toHaveTextContent('No human approval above threshold');
+    expect(ceiling).toHaveTextContent(FLOW_COPY.quoteBExcluded);
+    expect(ceiling).toHaveTextContent('3.0% × $50,000 = $1,500');
   });
 });
 
@@ -229,11 +227,6 @@ describe('copy rules', () => {
       FLOW_COPY.quoteAccept,
       FLOW_COPY.quoteBExcluded,
       FLOW_COPY.totalRate,
-      FLOW_COPY.examplesTitle,
-      FLOW_COPY.examplesSub('$50,000'),
-      FLOW_COPY.exampleDeclined,
-      FLOW_COPY.exampleDeclinedNote,
-      ...QUOTE_EXAMPLES.map((ex) => ex.label),
       FLOW_COPY.payTitle,
       FLOW_COPY.paySub,
       FLOW_COPY.payUpfrontTitle,

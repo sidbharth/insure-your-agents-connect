@@ -617,12 +617,6 @@ export const FLOW_COPY = {
   quoteAccept: 'Accept quote →',
   quoteBExcluded: 'Coverage B excluded',
   totalRate: 'Total rate',
-  examplesTitle: 'How other configurations would price',
-  examplesSub: (cap: string) =>
-    `Illustrative agents at the same ${cap} cap. Every skipped control raises the rate, and some change what is covered.`,
-  exampleDeclined: 'Declined',
-  exampleDeclinedNote:
-    'Not insurable at any price. A registered hash identity, transfer caps, whitelist enforcement, and action logging are required before a quote exists.',
   payTitle: 'Payment',
   paySub: 'Choose how the annual premium is settled.',
   payUpfrontTitle: 'Pay upfront',
