@@ -167,7 +167,7 @@ export default function PrincipalReview() {
             <h2 className="text-md font-semibold text-ink">Your position under the policy</h2>
             <ul className="mt-2 space-y-1.5 text-sm text-body">
               <li>
-                You are an insured under this policy, alongside the Operator.
+                You are a covered party under this policy, alongside the Operator.
               </li>
               <li>
                 Losses to your assets under Coverages A to D and F are paid

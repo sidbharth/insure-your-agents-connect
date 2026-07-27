@@ -31,7 +31,7 @@ afterEach(() => {
 describe('app shell', () => {
   it('renders the header, nav, ShowMath toggle and price chip', () => {
     renderAt('/');
-    expect(screen.getByText('AgentConnect Insurance')).toBeInTheDocument();
+    expect(screen.getByText('AgentConnect Cover')).toBeInTheDocument();
     expect(screen.getByTestId('main-nav')).toBeInTheDocument();
     expect(screen.getByText('My policies')).toBeInTheDocument();
     expect(screen.getByText('Fleet')).toBeInTheDocument();

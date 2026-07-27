@@ -141,7 +141,7 @@ describe('denial letter and appeal', () => {
   it('signs off as the Claims Committee without the denial callout', () => {
     renderDeniedOutcome();
     expect(
-      screen.getByText('Claims Committee, AgentConnect Insurance'),
+      screen.getByText('Claims Committee, AgentConnect Cover'),
     ).toBeInTheDocument();
     expect(screen.queryByText('Why a denial gets a full letter')).not.toBeInTheDocument();
     expect(screen.getByText('Request fast-track review')).toBeInTheDocument();

@@ -178,14 +178,14 @@ export default function Outcome({ claim, incident, onBack }: OutcomeProps) {
             </span>
           </div>
           <div className="flex items-baseline justify-between gap-4 text-sm">
-            <span className="text-muted">− Coinsurance (skipped tier-2 controls)</span>
+            <span className="text-muted">− Retained share (skipped tier-2 controls)</span>
             <span className="num font-mono font-semibold text-ink" data-testid="outcome-coinsurance">
               − {formatUsd(math.coinsuranceUsd, { maxFractionDigits: 2 })}
             </span>
           </div>
           <div className="flex items-baseline justify-between gap-4 text-sm">
             <span className="text-muted">
-              − Retention (after coinsurance)
+              − Retention (after the retained share)
               {math.retentionWaived && (
                 <span className="ml-2 rounded-md border border-good-line bg-good-bg px-1.5 py-0.5 text-2xs font-semibold text-good">
                   waived
@@ -232,7 +232,7 @@ export default function Outcome({ claim, incident, onBack }: OutcomeProps) {
             <ul className="mt-3 space-y-2 text-xs">
               <li className="flex items-center justify-between rounded-lg border border-line bg-[#fafbfa] px-3 py-2">
                 <span>
-                  <b>1. Insurer</b>{' '}
+                  <b>1. Programme</b>{' '}
                   <span className="text-muted">
                     until its {formatUsd(math.payoutUsd)} is restored
                   </span>
@@ -245,7 +245,7 @@ export default function Outcome({ claim, incident, onBack }: OutcomeProps) {
                 <span>
                   <b>2. You</b>{' '}
                   <span className="text-muted">
-                    retained {formatUsd(retainedUsd)} (coinsurance + retention)
+                    retained {formatUsd(retainedUsd)} (retained share + retention)
                   </span>
                 </span>
                 <span className="num font-mono text-muted">
@@ -340,7 +340,7 @@ function DenialLetter({ claim, incident, result, conditionDenial, determinedAt, 
             <span className="flex h-7 w-7 items-center justify-center rounded-md bg-ink text-xs font-extrabold text-white">
               AC
             </span>
-            <span className="text-sm font-bold text-ink">AgentConnect Insurance</span>
+            <span className="text-sm font-bold text-ink">AgentConnect Cover</span>
           </div>
           <div className="text-right text-2xs text-faint">
             <div>Claim {claimRef(claim.id)}, Policy P-2026-0147</div>
@@ -433,7 +433,7 @@ function DenialLetter({ claim, incident, result, conditionDenial, determinedAt, 
           <p>
             Respectfully,
             <br />
-            <b className="text-ink">Claims Committee, AgentConnect Insurance</b>
+            <b className="text-ink">Claims Committee, AgentConnect Cover</b>
           </p>
           <p className="border-t border-line pt-3 text-2xs text-faint">
             You may request a fast-track review of this determination within 30

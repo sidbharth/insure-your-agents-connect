@@ -403,7 +403,7 @@ export default function Policies() {
               <b className="num">{liveRows.length}</b>
             </div>
             <div className="mt-1 flex justify-between text-xs">
-              <span className="text-muted">Total insured caps</span>
+              <span className="text-muted">Total covered caps</span>
               <b className="num" data-testid="total-caps">{formatUsd(totalCapsUsd)}</b>
             </div>
             <div className="mt-2 flex justify-between border-t border-line pt-2 text-xs">

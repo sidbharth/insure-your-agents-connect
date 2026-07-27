@@ -39,7 +39,7 @@ export function ConcentrationMeter({
       </div>
       <div className="mb-2 flex items-center gap-1.5">
         <span className="text-xs text-muted">
-          Share of programme-wide insured caps
+          Share of programme-wide covered caps
         </span>
         <SimulatedBadge />
       </div>

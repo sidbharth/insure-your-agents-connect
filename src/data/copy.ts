@@ -9,7 +9,7 @@ import type { CoverageRoute, ScenarioId } from '../store/types';
 // Positioning / shell
 // ---------------------------------------------------------------------------
 
-export const POSITIONING_LINE = 'Insure your Agents for up to $50,000.';
+export const POSITIONING_LINE = 'Cover your Agents for up to $50,000.';
 
 export const RESET_FOOTNOTE =
   'Data is stored in this browser only. Save your session to keep progress across reloads. Unsaved changes revert to the sample fleet.';
@@ -110,7 +110,7 @@ export const COVERAGE_B_GREY_REASON =
 // ---------------------------------------------------------------------------
 
 export const EXCLUSION_WALL_MANTRA =
-  "The policy insures the delegation and the machinery around it, not the model's judgment.";
+  "The policy covers the delegation and the machinery around it, not the model's judgment.";
 
 export const EXCLUSION_WALL: string[] = [
   "Losses caused by the model producing an incorrect result. The policy covers the delegation and the systems that enforce it, not the quality of the model's output.",
@@ -118,7 +118,7 @@ export const EXCLUSION_WALL: string[] = [
   'Failure or forking of the underlying blockchain.',
   'Compromise of a third-party protocol that the agent used within its mandate.',
   'A transfer the Principal personally authorized while deceived. This risk belongs to a conventional crime policy.',
-  'Losses incurred while running a configuration that was changed without notice to the insurer.',
+  'Losses incurred while running a configuration that was changed without notice to the programme.',
   'Losses arising from sanctions, war, or state-sponsored attacks.',
   "Fraud committed by the Operator's own leadership.",
 ];
@@ -169,7 +169,7 @@ export const TIER2_COPY: Tier2Copy[] = [
     key: 'harnessAudit',
     label: 'Independent harness audit',
     surcharge: '+0.3%',
-    chip: 'and 20% coinsurance on guardrail-failure claims until first audit',
+    chip: 'and a 20% retained share on guardrail failure claims until first audit',
     insurersWhy: 'Guardrails that have not been assessed cannot be priced.',
   },
   {
@@ -215,7 +215,7 @@ export const ADVANCED_PRICING_COPY = [
 // ---------------------------------------------------------------------------
 
 export const INSURER_DELAY_NOTE =
-  'Insurer delays do not count against your time limits.';
+  'Programme delays do not count against your time limits.';
 
 export const CLAIM_EMPTY_STATE =
   'No incidents reported on your fleet. Detected incidents appear here with their records attached.';
@@ -249,7 +249,7 @@ export const EVIDENCE_ITEM_LABELS: Record<number, string> = {
 export const DENIAL_MODEL_CONDUCT = {
   title: 'Determination: not covered (model conduct)',
   body:
-    'We reviewed the attested inputs and outputs for this event. They show no adversarial content, no compromised tool, and no spoofed instruction channel: the agent paid a real, whitelisted payee, within its cap, because the model was simply wrong. The policy insures the delegation and its safety machinery, not the model\'s judgment. Model error, downtime, and training quality are excluded model conduct.',
+    'We reviewed the attested inputs and outputs for this event. They show no adversarial content, no compromised tool, and no spoofed instruction channel: the agent paid a real, whitelisted payee, within its cap, because the model was simply wrong. The policy covers the delegation and its safety machinery, not the model\'s judgment. Model error, downtime, and training quality are excluded model conduct.',
   counterfactual:
     'Had the attested inputs shown crafted adversarial content, this would have been Coverage B.',
   clause: 'Model Conduct Boundary',
@@ -489,7 +489,7 @@ export const FLOW_TERMS: FlowTermsPage[] = [
     ],
     notCovered: [
       'Contractual penalties above the actual loss suffered.',
-      'Fines and regulatory penalties, except defense costs where the law allows them to be insured.',
+      'Fines and regulatory penalties, except defense costs where the law allows them to be covered.',
       'Disputes that are purely commercial disagreements about service quality.',
     ],
     payment:

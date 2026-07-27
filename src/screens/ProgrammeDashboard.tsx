@@ -74,7 +74,7 @@ export default function ProgrammeDashboard() {
                 <thead className="text-2xs font-bold uppercase tracking-wider text-muted">
                   <tr className="border-b border-line">
                     <th className="py-1.5 pr-3">Component</th>
-                    <th className="py-1.5 pr-3 text-right">Insured caps</th>
+                    <th className="py-1.5 pr-3 text-right">Covered caps</th>
                     <th className="py-1.5 pr-3 text-right">From this operator</th>
                     <th className="py-1.5 text-right">Share of book</th>
                   </tr>
@@ -112,7 +112,7 @@ export default function ProgrammeDashboard() {
             <h2 className="text-md">Programme book</h2>
             <dl className="mt-3 space-y-1.5 text-xs">
               <div className="flex justify-between gap-4">
-                <dt className="text-muted">Total insured caps</dt>
+                <dt className="text-muted">Total covered caps</dt>
                 <dd className="num font-semibold text-ink">{formatUsd(totalCaps)}</dd>
               </div>
               <div className="flex justify-between gap-4">

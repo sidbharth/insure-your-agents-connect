@@ -406,7 +406,7 @@ export default function PresenterPanel() {
               onClick={missClock}
               className="rounded-md border border-[#33363f] bg-[#1f2127] px-2.5 py-1.5 text-xs text-[#d7dae1]"
             >
-              MISS a clock · insurer delay
+              MISS a clock · programme delay
             </button>
           </div>
           <div className="mt-2 text-[10px] text-[#6e7380]">

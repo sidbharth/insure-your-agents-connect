@@ -125,7 +125,7 @@ describe('7.8 — preflight blockers (REQ-7.8.1, AC-7)', () => {
     ).toHaveTextContent(/no countersignature, no cover/);
     expect(
       within(panel).getByTestId(`blocker-tier1-gate-off:${WIZARD_AGENT.id}`),
-    ).toHaveTextContent(/not insurable at any price/);
+    ).toHaveTextContent(/not eligible for cover at any price/);
     expect(
       within(panel).getByTestId('blocker-payment-method-not-selected'),
     ).toHaveTextContent(/No payment method selected/);

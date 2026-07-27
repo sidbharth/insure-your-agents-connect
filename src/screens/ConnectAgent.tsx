@@ -244,7 +244,7 @@ export default function ConnectAgent() {
             <p className="mt-3 text-xs text-muted">
               The fingerprint covers the harness code, the system prompt, the
               tool manifest, and the model endpoint. If any of these change,
-              the fingerprint changes. The policy insures the fingerprinted
+              the fingerprint changes. The policy covers the fingerprinted
               agent.
             </p>
           </div>

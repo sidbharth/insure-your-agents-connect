@@ -93,7 +93,7 @@ export default function ClocksAndDecision({ claim, incident, onBack, onNext }: C
 
   const nodes: TimelineNode[] = [
     { label: 'Notified', sub: 'within 48h of discovery', at: anchors.notifiedAt },
-    { label: 'Acknowledged', sub: 'insurer, 2 business days', at: anchors.acknowledgedAt },
+    { label: 'Acknowledged', sub: 'programme, 2 business days', at: anchors.acknowledgedAt },
     {
       label: 'Package check',
       sub: 'incomplete? told within 5 business days',

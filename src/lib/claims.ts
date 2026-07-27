@@ -216,7 +216,7 @@ export function adjudicate(input: AdjudicationInput): AdjudicationResult {
     const slice = 0.2 * (incident.recoverableUsd ?? 0);
     coinsuranceUsd += slice;
     coinsuranceLines.push({
-      label: 'Coinsurance: 20% of the recovery-recoverable slice (no recovery mechanism)',
+      label: 'Retained share: 20% of the recovery-recoverable slice (no recovery mechanism)',
       amount: formatUsd(slice),
       clause: '5.5',
     });
@@ -227,7 +227,7 @@ export function adjudicate(input: AdjudicationInput): AdjudicationResult {
       const slice = 0.15 * governed;
       coinsuranceUsd += slice;
       coinsuranceLines.push({
-        label: 'Coinsurance: 15% of the above-HITL-threshold slice (no human approval gate)',
+        label: 'Retained share: 15% of the above-HITL-threshold slice (no human approval gate)',
         amount: formatUsd(slice),
         clause: '5.5',
       });
@@ -237,7 +237,7 @@ export function adjudicate(input: AdjudicationInput): AdjudicationResult {
     const slice = 0.15 * (incident.postFirstAlertLossUsd ?? 0);
     coinsuranceUsd += slice;
     coinsuranceLines.push({
-      label: 'Coinsurance: 15% of the post-first-alert slice (no kill switch + monitoring)',
+      label: 'Retained share: 15% of the post-first-alert slice (no kill switch + monitoring)',
       amount: formatUsd(slice),
       clause: '5.5',
     });
@@ -246,7 +246,7 @@ export function adjudicate(input: AdjudicationInput): AdjudicationResult {
     const slice = 0.2 * quantumAfterLimitUsd;
     coinsuranceUsd += slice;
     coinsuranceLines.push({
-      label: 'Coinsurance: 20% Coverage-D coinsurance (unaudited harness, until first audit)',
+      label: 'Retained share: 20% on Coverage D (unaudited harness, until first audit)',
       amount: formatUsd(slice),
       clause: '5.5, D3.2',
     });
@@ -302,7 +302,7 @@ export function adjudicate(input: AdjudicationInput): AdjudicationResult {
           },
           ...(coinsuranceLines.length > 0
             ? coinsuranceLines
-            : [{ label: 'Coinsurance', amount: '$0', clause: '5.5', note: 'no skipped tier-2 control governs this loss' }]),
+            : [{ label: 'Retained share', amount: '$0', clause: '5.5', note: 'no skipped tier-2 control governs this loss' }]),
           {
             label: 'Retention',
             amount: retentionWaived ? '$0 (waived)' : formatUsd(retentionUsd),

@@ -26,7 +26,7 @@ const TIER1_COPY: { key: Tier1Gate; label: string; desc: string }[] = [
   {
     key: 'hashIdentity',
     label: 'Registered hash identity',
-    desc: "The agent's configuration fingerprint is anchored in the registry. The policy insures the fingerprinted agent.",
+    desc: "The agent's configuration fingerprint is anchored in the registry. The policy covers the fingerprinted agent.",
   },
   {
     key: 'transferCaps',
@@ -214,7 +214,7 @@ export default function Controls() {
                 return (
                   <div
                     key={ctrl.key}
-                    title={`Insurer's why: ${ctrl.insurersWhy}`}
+                    title={`Programme reasoning: ${ctrl.insurersWhy}`}
                     className={`rounded-md border px-3 py-2.5 ${
                       effectiveOn ? 'border-line' : 'border-warn-line bg-warn-bg'
                     }`}
@@ -272,7 +272,7 @@ export default function Controls() {
             </div>
 
             <p className="mt-3 text-2xs text-faint">
-              Hover any row to see the insurer's reasoning. Every surcharge is
+              Hover any row to see the programme's reasoning. Every surcharge is
               published in the Appendix 3 rate schedule. No hidden pricing.
             </p>
           </section>

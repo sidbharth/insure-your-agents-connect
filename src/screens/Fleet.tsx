@@ -374,7 +374,7 @@ export default function Fleet() {
               Fleet total ({totals.count} agent{totals.count === 1 ? '' : 's'})
             </span>
             <span className="num text-xs">
-              Insured caps <b className="text-sm">{formatUsd(totals.capsUsd)}</b>
+              Covered caps <b className="text-sm">{formatUsd(totals.capsUsd)}</b>
             </span>
             <span className="num ml-auto whitespace-nowrap text-xs">
               Annual premium{' '}
@@ -413,7 +413,7 @@ export default function Fleet() {
                 <b className="text-ink">{totals.count}</b>
               </div>
               <div className="flex justify-between">
-                <span>Total insured caps</span>
+                <span>Total covered caps</span>
                 <b className="text-ink">{formatUsd(totals.capsUsd)}</b>
               </div>
               <div className="flex justify-between border-t border-line-soft pt-1.5">

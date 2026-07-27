@@ -144,7 +144,7 @@ export const SCENARIOS: ScenarioDef[] = [
         'Signing credentials in the disclosed key map were stolen and misused, and funds moved without the agent or the Principal initiating them. This meets the definition of a Coverage C event.',
       clause: 'Coverage C',
       control:
-        'The disclosed key map. Only credentials in the disclosed setup are covered, and disclosure is what made this key an insured key.',
+        'The disclosed key map. Only credentials in the disclosed setup are covered, and disclosure is what made this key a covered key.',
     }),
   },
   {
@@ -160,9 +160,9 @@ export const SCENARIOS: ScenarioDef[] = [
       routeLine:
         'No coverage applies. The model conduct exclusion governs this event.',
       reason:
-        'The attested record shows clean inputs and an action within the mandate. The model produced an incorrect result on its own. The policy insures the delegation and the systems that enforce it, not the quality of the model’s output.',
+        'The attested record shows clean inputs and an action within the mandate. The model produced an incorrect result on its own. The policy covers the delegation and the systems that enforce it, not the quality of the model’s output.',
       clause: '4.9',
-      control: 'None. This boundary is what keeps the risk class insurable.',
+      control: 'None. This boundary is what keeps the risk class coverable.',
     }),
   },
   {
@@ -181,7 +181,7 @@ export const SCENARIOS: ScenarioDef[] = [
         'A slow or unavailable model is excluded model conduct. Downtime and its consequential fees belong to the service agreement with the provider, not to this policy.',
       clause: '4.9',
       control:
-        'None applies. No safety control governs a provider’s uptime. That risk is contractual, not insurable here.',
+        'None applies. No safety control governs a provider’s uptime. That risk is contractual, not coverable here.',
     }),
   },
   {
@@ -205,19 +205,19 @@ export const SCENARIOS: ScenarioDef[] = [
   {
     num: 8,
     title:
-      'A compromised insured agent corrupts a counterparty’s agent, and the counterparty sues',
+      'A compromised covered agent corrupts a counterparty’s agent, and the counterparty sues',
     narrative:
-      'A compromised insured agent passes corrupted data to a counterparty’s agent. The counterparty sues for its losses, and the insured agent also lost funds of its own.',
+      'A compromised covered agent passes corrupted data to a counterparty’s agent. The counterparty sues for its losses, and the covered agent also lost funds of its own.',
     pickerVerdict: 'Covered',
     verdict: ({ capUsd }) => ({
       covered: true,
       headline: 'Covered under Coverages E and B',
-      routeLine: `Coverage E (third-party liability) pays the counterparty’s claim up to ${formatUsd(perEventLimit('E', capUsd))} (50% of the cap). Coverage B pays the insured’s own losses up to ${formatUsd(perEventLimit('B', capUsd))}.`,
+      routeLine: `Coverage E (third-party liability) pays the counterparty’s claim up to ${formatUsd(perEventLimit('E', capUsd))} (50% of the cap). Coverage B pays the covered agent’s own losses up to ${formatUsd(perEventLimit('B', capUsd))}.`,
       reason:
-        'The counterparty’s damages arise from the insured agent’s covered failure (Coverage E, with defense costs inside the limit). The insured’s own manipulation losses fall under Coverage B, proven through the attested record.',
+        'The counterparty’s damages arise from the covered agent’s failure under the policy (Coverage E, with defense costs inside the limit). The covered agent’s own manipulation losses fall under Coverage B, proven through the attested record.',
       clause: 'Coverage E, Coverage B',
       control:
-        'TEE attestation. It proves the insured agent was itself compromised, which is what routes the counterparty’s claim to Coverage E.',
+        'TEE attestation. It proves the covered agent was itself compromised, which is what routes the counterparty’s claim to Coverage E.',
     }),
   },
 ];

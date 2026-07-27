@@ -56,7 +56,7 @@ export function paymentPreflight(
       if (!agent.configHash) {
         blockers.push({
           key: `hash-not-registered:${agent.id}`,
-          reason: `${agent.id}: configuration hash not registered — the policy insures the fingerprinted agent`,
+          reason: `${agent.id}: configuration hash not registered — the policy covers the fingerprinted agent`,
         });
       }
       if (!agent.ownershipVerified) {
@@ -74,7 +74,7 @@ export function paymentPreflight(
       if (!agent.tier1AllOn) {
         blockers.push({
           key: `tier1-gate-off:${agent.id}`,
-          reason: `${agent.id}: a tier-1 gate is off — not insurable at any price (GT-1)`,
+          reason: `${agent.id}: a tier-1 gate is off — not eligible for cover at any price (GT-1)`,
         });
       }
     }

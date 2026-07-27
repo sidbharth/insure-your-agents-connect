@@ -141,7 +141,7 @@ export const EVIDENCE_ITEM_SOURCES: Record<number, string> = {
   9: 'Counterparty/court',
   10: 'Operator',
   11: 'Schedule venues',
-  12: 'Operator + Insurer panel',
+  12: 'Operator + programme panel',
 };
 
 /** Per-scenario label refinements for the route-specific items (plan §5d). */
@@ -276,7 +276,7 @@ function artifactFor(
     12: {
       kind: 'record',
       title: 'Recovery actions record',
-      body: `Recovery actions taken and outstanding (T7.4), maintained with the insurer's panel.`,
+      body: `Recovery actions taken and outstanding (T7.4), maintained with the programme's panel.`,
     },
   };
   const specific: Partial<Record<ScenarioId, Record<number, MockArtifact>>> = {

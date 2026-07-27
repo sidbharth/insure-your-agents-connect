@@ -113,28 +113,28 @@ export const TIER2_SURCHARGES: readonly SurchargeSpec[] = [
     tenths: 3,
     label: 'No recovery mechanism',
     clause: 'Appendix 3, 5.5',
-    coverageEffect: '20% recovery coinsurance',
+    coverageEffect: '20% retained on recovery',
   },
   {
     control: 'harnessAudit',
     tenths: 3,
     label: 'No independent harness audit',
     clause: 'Appendix 3, 5.5',
-    coverageEffect: '20% Coverage-D coinsurance until first audit',
+    coverageEffect: '20% retained on Coverage D until first audit',
   },
   {
     control: 'hitl',
     tenths: 3,
     label: 'No human approval above threshold',
     clause: 'Appendix 3, 5.5',
-    coverageEffect: '15% above-threshold coinsurance',
+    coverageEffect: '15% retained above the threshold',
   },
   {
     control: 'killSwitch',
     tenths: 2,
     label: 'No kill switch + anomaly monitoring',
     clause: 'Appendix 3, 5.5',
-    coverageEffect: '15% post-first-alert coinsurance',
+    coverageEffect: '15% retained after the first alert',
   },
 ] as const;
 

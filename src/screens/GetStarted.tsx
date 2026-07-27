@@ -34,7 +34,7 @@ const ROLES: {
     key: 'principal',
     title: 'Principal',
     definition:
-      'Agents run by an Operator spend your funds. You delegate authority to them and define what they may do. As an enrolled Principal you are an insured under the policy, and your losses are paid directly to you.',
+      'Agents run by an Operator spend your funds. You delegate authority to them and define what they may do. As an enrolled Principal you are a covered party under the policy, and your losses are paid directly to you.',
     cta: 'Continue as Principal',
     testId: 'role-principal',
   },
@@ -78,7 +78,7 @@ const HOW_IT_WORKS = [
   },
   {
     q: 'What does the policy cover?',
-    a: "The policy provides six coverages, labeled A through F, ranging from mandate breaches to cleanup and recovery costs. It does not cover losses caused by an incorrect model decision alone. The policy insures the delegation and the systems that enforce it, not the model's judgment.",
+    a: "The policy provides six coverages, labeled A through F, ranging from mandate breaches to cleanup and recovery costs. It does not cover losses caused by an incorrect model decision alone. The policy covers the delegation and the systems that enforce it, not the model's judgment.",
   },
   {
     q: 'What happens when a loss occurs?',

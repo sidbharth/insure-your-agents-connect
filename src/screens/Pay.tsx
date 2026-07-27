@@ -373,7 +373,7 @@ export default function Pay() {
         <div className="flex items-center gap-2.5 border-b border-line-soft px-6 py-3.5">
           <h2 className="text-md">Order summary</h2>
           <span className="num text-xs text-muted">
-            {rows.length} agent{rows.length === 1 ? '' : 's'}, total insured caps{' '}
+            {rows.length} agent{rows.length === 1 ? '' : 's'}, total covered caps{' '}
             {formatUsd(totalCaps)}
           </span>
         </div>

@@ -67,7 +67,7 @@ export function deadlines(state: ClockState): DeadlineRow[] {
   const notifyDue =
     a.discoveredAt + (state.nearMiss ? NEAR_MISS_NOTIFY_WINDOW_MS : NOTIFY_WINDOW_MS);
   rows.push({
-    label: state.nearMiss ? 'Notify insurer (near-miss: 7 days)' : 'Notify insurer (48 hours)',
+    label: state.nearMiss ? 'Notify the programme (near miss, 7 days)' : 'Notify the programme (48 hours)',
     dueAt: notifyDue,
     whoseClock: 'Operator',
     status: statusFor(a.notifiedAt, notifyDue),

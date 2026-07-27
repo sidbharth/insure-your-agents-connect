@@ -101,7 +101,7 @@ function Header() {
     <header className="flex min-h-[54px] flex-wrap items-center gap-x-6 gap-y-2 bg-ink px-4 py-2 text-white sm:px-7">
       <Link to="/" className="flex items-center gap-2.5 text-[15px] font-semibold tracking-tight text-white">
         <img src="/near-symbol.svg" alt="NEAR" className="h-5 w-5" />
-        AgentConnect Insurance
+        AgentConnect Cover
       </Link>
       <nav className="flex gap-0.5 text-sm" data-testid="main-nav">
         {NAV_ITEMS.map((item) => (
