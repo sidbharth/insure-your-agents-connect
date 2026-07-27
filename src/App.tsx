@@ -29,7 +29,6 @@ import ConnectLanding from './screens/flow/ConnectLanding';
 import Controls from './screens/Controls';
 import Coverage from './screens/Coverage';
 import Fleet from './screens/Fleet';
-import FlowAgents from './screens/flow/FlowAgents';
 import FlowPay from './screens/flow/FlowPay';
 import FlowQuote from './screens/flow/FlowQuote';
 import FlowSign from './screens/flow/FlowSign';
@@ -209,7 +208,6 @@ export function AppShell() {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<ConnectLanding />} />
-          <Route path="/flow/agents" element={<FlowAgents />} />
           <Route path="/flow/quote" element={<FlowQuote />} />
           <Route path="/flow/pay" element={<FlowPay />} />
           <Route path="/flow/terms/:page" element={<FlowTerms />} />

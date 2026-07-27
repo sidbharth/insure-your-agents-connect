@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FLOW_COPY, FLOW_TERMS } from '../../data/copy';
 import { perEventLimit } from '../../lib/claims';
-import { formatUsd } from '../../lib/money';
+import { formatN, formatUsd, usdToN } from '../../lib/money';
 import { SEED_CAP_USD } from '../../data/seed';
 import { useStore } from '../../store';
 import { capUsdFor } from '../purchase/enroll';
@@ -19,6 +19,8 @@ const PAGE_COUNT = 6;
 
 export default function FlowTerms() {
   const { page: pageParam } = useParams();
+  const agents = useStore((s) => s.agents);
+  const usdPerN = useStore((s) => s.priceFeed.usdPerN);
   const state = useStore((s) => s);
   const navigate = useNavigate();
   const selected = getSelectedAgentIds();
@@ -87,6 +89,41 @@ export default function FlowTerms() {
           className="mt-4 rounded-card border border-line bg-panel p-5 shadow-card"
           data-testid={`terms-page-${terms.route}`}
         >
+          <div
+            className="mb-4 rounded-lg border border-line bg-canvas px-4 py-3"
+            data-testid="terms-who"
+          >
+            <div className="text-2xs font-bold uppercase tracking-wider text-ink">
+              {FLOW_COPY.termsWhoTitle}
+            </div>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {selected.map((id) => {
+                const agent = agents.find((a) => a.id === id);
+                if (agent === undefined) return null;
+                const excluded =
+                  terms.route === 'B' && !agent.controls.tier2.attestation;
+                return (
+                  <span
+                    key={id}
+                    data-testid={`terms-who-${id}`}
+                    className={`inline-flex items-center gap-1.5 rounded border px-2 py-0.5 font-mono text-2xs font-semibold ${
+                      excluded
+                        ? 'border-bad-line bg-bad-bg text-bad'
+                        : 'border-good-line bg-good-bg text-good'
+                    }`}
+                  >
+                    {agent.name}
+                    {excluded && (
+                      <span className="font-sans font-semibold">
+                        {FLOW_COPY.coverMapExcluded}, {FLOW_COPY.termsWhoExcludedReason}
+                      </span>
+                    )}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+
           <p className="text-sm text-body">{terms.intro}</p>
 
           <div className="mt-5">
@@ -136,9 +173,14 @@ export default function FlowTerms() {
               {FLOW_COPY.termsLimit}
             </div>
             <div className="num mt-0.5 text-lg font-bold text-ink">
-              {formatUsd(limitUsd)}
+              {formatN(usdToN(limitUsd, usdPerN), { maxFractionDigits: 0 })}
             </div>
-            <div className="text-2xs text-muted">{FLOW_COPY.termsLimitPerAgent}</div>
+            <div className="num text-2xs text-ink">
+              {formatUsd(limitUsd)} {FLOW_COPY.termsLimitPerAgent}
+            </div>
+            <p className="mt-2 border-t border-accent-line pt-2 text-2xs text-body">
+              {FLOW_COPY.termsDepletion}
+            </p>
           </div>
 
           <label className="mt-5 flex cursor-pointer items-start gap-2.5 rounded-lg border border-line bg-canvas px-3.5 py-3">

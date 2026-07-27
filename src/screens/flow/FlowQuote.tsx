@@ -1,44 +1,81 @@
 /**
- * Connect flow, step 3 — the overall quote (route /flow/quote).
+ * Connect flow, step 2 — the overall quote (route /flow/quote), denominated
+ * in $NEAR at the live rate with USD anchors underneath.
  *
- * Total cover and annual premium from the enrollments priced at connect
- * time. Each agent row expands into the frozen rate breakdown that produced
- * its premium (base rate, surcharges for skipped controls, loadings). The
- * connectable agents carry deliberately distinct control profiles, so the
- * rows themselves demonstrate the rate ladder.
+ * Each agent row expands into the full picture for that agent: how its rate
+ * was built, what it is covered for and up to how much per coverage, how the
+ * deductible works, how payments deplete the annual cover, and how claims
+ * are counted. Agents can be removed from the quote here; the totals
+ * recompute from the remaining rows.
  */
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FLOW_COPY } from '../../data/copy';
-import { formatPct, formatUsd } from '../../lib/money';
+import { PriceChipInline } from '../../components/helpers';
+import { COVERAGE_CARDS, FLOW_COPY } from '../../data/copy';
+import { perEventLimit } from '../../lib/claims';
+import { shortHash } from '../../lib/hash';
+import { formatN, formatPct, formatUsd, usdToN } from '../../lib/money';
 import { useStore } from '../../store';
-import type { RateLine } from '../../store/types';
+import type { Agent, CoverageRoute, RateLine } from '../../store/types';
 import {
   capUsdFor,
+  controlsSummary,
   coverageBExcluded,
   enrollmentRatePct,
 } from '../purchase/enroll';
 import { getSelectedAgentIds, setSelectedAgentIds } from './flowState';
 
-function RateBreakdownPanel({
+const ROUTES: CoverageRoute[] = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+/** Primary $NEAR figure with the USD anchor underneath. */
+function NearAmount({
+  usd,
+  usdPerN,
+  big,
+  testId,
+}: {
+  usd: number;
+  usdPerN: number;
+  big?: boolean;
+  testId?: string;
+}) {
+  const n = usdToN(usd, usdPerN);
+  return (
+    <span className={big ? 'block' : 'block text-right'} data-testid={testId}>
+      <span className={`num block font-bold text-ink ${big ? 'text-2xl' : 'text-sm'}`}>
+        {formatN(n, { maxFractionDigits: big ? 0 : 1 })}
+      </span>
+      <span className={`num block text-ink ${big ? 'text-xs' : 'text-2xs'}`}>
+        {formatUsd(usd)}
+      </span>
+    </span>
+  );
+}
+
+function RateBreakdownSection({
   lines,
   totalPct,
   capUsd,
   premiumUsd,
+  usdPerN,
   testId,
 }: {
   lines: RateLine[];
   totalPct: number;
   capUsd: number;
   premiumUsd: number;
+  usdPerN: number;
   testId: string;
 }) {
   return (
-    <div data-testid={testId} className="border-t border-line-soft bg-canvas px-4 py-3">
-      <ul className="flex flex-col gap-1.5">
+    <div data-testid={testId}>
+      <div className="text-2xs font-bold uppercase tracking-wider text-ink">
+        {FLOW_COPY.totalRate}
+      </div>
+      <ul className="mt-2 flex flex-col gap-1.5">
         {lines.map((line, i) => (
           <li key={line.label} className="flex items-baseline justify-between gap-3 text-xs">
-            <span className="min-w-0 text-muted">
+            <span className="min-w-0 text-body">
               {line.label}
               {line.coverageEffect !== undefined && (
                 <span className="ml-1.5 inline-flex rounded border border-warn-line bg-warn-bg px-1.5 py-px text-2xs font-semibold text-warn">
@@ -57,9 +94,68 @@ function RateBreakdownPanel({
         <span className="font-semibold text-ink">{FLOW_COPY.totalRate}</span>
         <span className="num font-semibold text-ink">{formatPct(totalPct)}</span>
       </div>
-      <div className="num mt-1 text-right text-2xs text-faint">
-        {formatPct(totalPct)} × {formatUsd(capUsd)} = {formatUsd(premiumUsd)}
+      <div className="num mt-1 text-right text-2xs text-ink">
+        {formatPct(totalPct)} × {formatUsd(capUsd)} = {formatUsd(premiumUsd)} ≈{' '}
+        {formatN(usdToN(premiumUsd, usdPerN), { maxFractionDigits: 1 })}
       </div>
+    </div>
+  );
+}
+
+function CoverMapSection({
+  agent,
+  capUsd,
+  usdPerN,
+}: {
+  agent: Agent;
+  capUsd: number;
+  usdPerN: number;
+}) {
+  return (
+    <div data-testid={`cover-map-${agent.id}`}>
+      <div className="text-2xs font-bold uppercase tracking-wider text-ink">
+        {FLOW_COPY.coverMapTitle}
+      </div>
+      <ul className="mt-2 flex flex-col gap-1.5">
+        {ROUTES.map((route) => {
+          const card = COVERAGE_CARDS.find((c) => c.route === route);
+          const excluded = route === 'B' && !agent.controls.tier2.attestation;
+          const limitUsd = perEventLimit(route, capUsd);
+          return (
+            <li
+              key={route}
+              className="flex items-baseline justify-between gap-3 text-xs"
+              data-testid={`cover-map-${agent.id}-${route}`}
+            >
+              <span className={`min-w-0 ${excluded ? 'text-body line-through' : 'text-body'}`}>
+                <b className="text-ink no-underline">Coverage {route}.</b> {card?.title}
+              </span>
+              {excluded ? (
+                <span className="inline-flex flex-none rounded border border-bad-line bg-bad-bg px-1.5 py-px text-2xs font-semibold text-bad">
+                  {FLOW_COPY.coverMapExcluded}
+                </span>
+              ) : (
+                <span className="num flex-none text-ink">
+                  up to {formatN(usdToN(limitUsd, usdPerN), { maxFractionDigits: 0 })}{' '}
+                  ({formatUsd(limitUsd)})
+                </span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+      <p className="mt-2 border-t border-line-soft pt-2 text-2xs text-body">
+        {FLOW_COPY.coverMapLimitNote}
+      </p>
+    </div>
+  );
+}
+
+function InfoBlock({ title, body }: { title: string; body: string }) {
+  return (
+    <div>
+      <div className="text-2xs font-bold uppercase tracking-wider text-ink">{title}</div>
+      <p className="mt-1 text-xs text-body">{body}</p>
     </div>
   );
 }
@@ -67,6 +163,7 @@ function RateBreakdownPanel({
 export default function FlowQuote() {
   const agents = useStore((s) => s.agents);
   const enrollments = useStore((s) => s.enrollments);
+  const usdPerN = useStore((s) => s.priceFeed.usdPerN);
   const state = useStore((s) => s);
   const navigate = useNavigate();
   const selected = getSelectedAgentIds();
@@ -110,35 +207,47 @@ export default function FlowQuote() {
         <h1 className="text-lg font-bold tracking-tight text-ink">
           {FLOW_COPY.quoteTitle}
         </h1>
-        <p className="mt-1 max-w-2xl text-sm text-muted">
+        <p className="mt-1 max-w-2xl text-sm text-body">
           {FLOW_COPY.quoteSub} {FLOW_COPY.quoteHint}
         </p>
       </div>
 
-      <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="mb-1.5 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="rounded-card border border-line bg-panel p-5 shadow-card">
-          <div className="text-2xs font-bold uppercase tracking-widest text-faint">
+          <div className="text-2xs font-bold uppercase tracking-widest text-ink">
             {FLOW_COPY.quoteTotalCover}
           </div>
-          <div className="num mt-1 text-2xl font-bold text-ink" data-testid="quote-total-cover">
-            {formatUsd(totalCoverUsd)}
+          <div className="mt-1" data-testid="quote-total-cover">
+            <NearAmount usd={totalCoverUsd} usdPerN={usdPerN} big />
           </div>
         </div>
         <div className="rounded-card border border-line bg-panel p-5 shadow-card">
-          <div className="text-2xs font-bold uppercase tracking-widest text-faint">
+          <div className="text-2xs font-bold uppercase tracking-widest text-ink">
             {FLOW_COPY.quoteAnnualPremium}
           </div>
-          <div className="num mt-1 text-2xl font-bold text-ink" data-testid="quote-total-premium">
-            {formatUsd(totalPremiumUsd)}
+          <div className="mt-1" data-testid="quote-total-premium">
+            <NearAmount usd={totalPremiumUsd} usdPerN={usdPerN} big />
           </div>
         </div>
       </div>
+      <div className="mb-4 text-right text-2xs text-ink">
+        <PriceChipInline />
+      </div>
 
       <div className="rounded-card border border-line bg-panel shadow-card">
+        <div className="flex items-center gap-x-4 border-b border-line px-4 py-2 text-2xs font-bold uppercase tracking-wider text-ink">
+          <span className="w-3 flex-none" />
+          <span className="min-w-0 flex-1">{FLOW_COPY.quoteColumns.agent}</span>
+          <span className="w-14 flex-none text-right">{FLOW_COPY.quoteColumns.rate}</span>
+          <span className="w-28 flex-none text-right">
+            {FLOW_COPY.quoteColumns.premium}
+          </span>
+        </div>
         <ul className="divide-y divide-line-soft">
           {rows.map(({ agent, enrollment }) => {
             const open = expandedAgent === agent.id;
             const totalPct = enrollmentRatePct(enrollment);
+            const capUsd = capUsdFor(state, agent.id);
             return (
               <li key={agent.id}>
                 <button
@@ -146,32 +255,59 @@ export default function FlowQuote() {
                   data-testid={`quote-row-${agent.id}`}
                   aria-expanded={open}
                   onClick={() => setExpandedAgent(open ? undefined : agent.id)}
-                  className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 text-left"
+                  className="flex w-full items-center gap-x-4 px-4 py-3 text-left"
                 >
-                  <span className="flex-none text-2xs text-faint">{open ? '▾' : '▸'}</span>
-                  <span className="min-w-0 flex-1 truncate font-mono text-sm font-semibold text-ink">
-                    {agent.name}
-                  </span>
-                  {coverageBExcluded(enrollment) && (
-                    <span className="inline-flex rounded border border-bad-line bg-bad-bg px-1.5 py-px text-2xs font-semibold text-bad">
-                      {FLOW_COPY.quoteBExcluded}
+                  <span className="w-3 flex-none text-2xs text-ink">{open ? '▾' : '▸'}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-mono text-sm font-semibold text-ink">
+                      {agent.name}
                     </span>
-                  )}
-                  <span className="num text-xs text-muted">{totalPct}%</span>
-                  <span className="num w-20 text-right text-sm font-semibold text-ink">
-                    {formatUsd(enrollment.premiumUsd)}
+                    {coverageBExcluded(enrollment) && (
+                      <span className="mt-0.5 inline-flex rounded border border-bad-line bg-bad-bg px-1.5 py-px text-2xs font-semibold text-bad">
+                        {FLOW_COPY.quoteBExcluded}
+                      </span>
+                    )}
+                  </span>
+                  <span className="num w-14 flex-none text-right text-xs text-ink">
+                    {totalPct}%
+                  </span>
+                  <span className="w-28 flex-none">
+                    <NearAmount usd={enrollment.premiumUsd} usdPerN={usdPerN} />
                   </span>
                 </button>
                 {open && (
-                  <>
-                    <RateBreakdownPanel
-                      lines={[...enrollment.rateBreakdown, ...enrollment.loadings]}
-                      totalPct={totalPct}
-                      capUsd={capUsdFor(state, agent.id)}
-                      premiumUsd={enrollment.premiumUsd}
-                      testId={`quote-breakdown-${agent.id}`}
-                    />
-                    <div className="flex justify-end border-t border-line-soft bg-canvas px-4 py-2.5">
+                  <div className="border-t border-line-soft bg-canvas px-4 py-4">
+                    <div className="num mb-4 text-2xs text-ink">
+                      {agent.harness.name} {agent.harness.version} ·{' '}
+                      {controlsSummary(agent)} · {shortHash(agent.configHash)}
+                    </div>
+                    <div className="flex flex-col gap-5">
+                      <RateBreakdownSection
+                        lines={[...enrollment.rateBreakdown, ...enrollment.loadings]}
+                        totalPct={totalPct}
+                        capUsd={capUsd}
+                        premiumUsd={enrollment.premiumUsd}
+                        usdPerN={usdPerN}
+                        testId={`quote-breakdown-${agent.id}`}
+                      />
+                      <CoverMapSection agent={agent} capUsd={capUsd} usdPerN={usdPerN} />
+                      <InfoBlock
+                        title={FLOW_COPY.deductibleTitle}
+                        body={FLOW_COPY.deductibleBody}
+                      />
+                      <InfoBlock
+                        title={FLOW_COPY.limitsTitle}
+                        body={FLOW_COPY.limitsBody(
+                          formatN(usdToN(capUsd, usdPerN), { maxFractionDigits: 0 }),
+                          formatUsd(capUsd),
+                        )}
+                      />
+                      <InfoBlock
+                        title={FLOW_COPY.claimsTitle}
+                        body={FLOW_COPY.claimsBody}
+                      />
+                    </div>
+                    <div className="mt-4 flex justify-end border-t border-line-soft pt-3">
                       <button
                         type="button"
                         data-testid={`quote-remove-${agent.id}`}
@@ -181,7 +317,7 @@ export default function FlowQuote() {
                         {FLOW_COPY.quoteRemove}
                       </button>
                     </div>
-                  </>
+                  </div>
                 )}
               </li>
             );

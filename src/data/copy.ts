@@ -9,7 +9,7 @@ import type { CoverageRoute, ScenarioId } from '../store/types';
 // Positioning / shell
 // ---------------------------------------------------------------------------
 
-export const POSITIONING_LINE = 'Cover your Agents for up to $50,000.';
+export const POSITIONING_LINE = 'Cover your Agents with NEAR.';
 
 export const RESET_FOOTNOTE =
   'Data is stored in this browser only. Save your session to keep progress across reloads. Unsaved changes revert to the sample fleet.';
@@ -613,13 +613,30 @@ export const FLOW_COPY = {
   agentsNoAttestation: 'No attestation',
   quoteTitle: 'Your quote',
   quoteSub: 'Cover and premium are derived from each agent’s controls and cap.',
-  quoteHint: 'Select an agent to see how its rate was built.',
+  quoteHint: 'Select an agent to see how its rate was built and what it is covered for.',
   quoteTotalCover: 'Total cover',
   quoteAnnualPremium: 'Annual premium',
-  quoteAccept: 'Accept quote →',
+  quoteAccept: 'Accept quote and continue to terms →',
   quoteBExcluded: 'Coverage B excluded',
-  quoteRemove: 'Remove agent',
+  quoteRemove: 'Remove agent from quote',
   totalRate: 'Total rate',
+  quoteColumns: {
+    agent: 'Agent',
+    rate: 'Rate',
+    premium: 'Annual premium',
+  },
+  coverMapTitle: 'What this agent is covered for',
+  coverMapExcluded: 'excluded',
+  coverMapLimitNote: 'Each figure is the most a single event can pay under that coverage.',
+  deductibleTitle: 'Deductible',
+  deductibleBody:
+    'Each claim event carries a deductible of the greater of 500 $NEAR or 2% of the loss. It is never collected up front. It is subtracted from the payment. For guardrail failure claims the deductible is waived when the failed control had passed its latest scheduled verification.',
+  limitsTitle: 'How the limits work',
+  limitsBody: (capNear: string, capUsd: string) =>
+    `This agent carries ${capNear} (${capUsd}) of cover for the policy year. Each event pays up to the limit shown for its coverage. Every payment reduces the remaining annual cover. When the remaining cover is exhausted, cover for this agent ceases for the rest of the year. One reinstatement of the full amount is available at a repriced premium.`,
+  claimsTitle: 'Claims',
+  claimsBody:
+    'There is no limit on the number of claims you can file. Each event carries its own deductible. Related losses that flow from one root cause count as one event, with one limit and one deductible.',
   payTitle: 'Payment',
   paySub: 'Choose how the annual premium is settled.',
   payUpfrontTitle: 'Pay upfront',
@@ -658,7 +675,12 @@ export const FLOW_COPY = {
     stake: 'Estimated stake',
   },
   termsProgress: (n: number) => `Part ${n} of 6`,
-  termsSub: 'Read each coverage in full. Your agreement to each part is recorded.',
+  termsSub:
+    'Let us walk through what your agents are covered for. Your agreement to each part is recorded.',
+  termsWhoTitle: 'Who this coverage applies to',
+  termsWhoExcludedReason: 'runs without attestation',
+  termsDepletion:
+    'Payments stop once this limit is reached for an event. Every payment also reduces the agent’s remaining annual cover.',
   termsCovered: 'What is covered',
   termsNotCovered: 'What is not covered',
   termsPayment: 'How payment works',

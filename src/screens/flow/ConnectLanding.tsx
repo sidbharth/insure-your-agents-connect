@@ -99,7 +99,7 @@ export default function ConnectLanding() {
             title={FLOW_COPY.processingTitle}
             steps={FLOW_COPY.processingSteps.map((label) => ({ label }))}
             totalMs={3600}
-            onDone={() => navigate('/flow/agents')}
+            onDone={() => navigate('/flow/quote')}
           />
         ) : (
           <button

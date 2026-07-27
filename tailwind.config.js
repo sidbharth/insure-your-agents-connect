@@ -14,9 +14,11 @@ export default {
         // core surfaces
         ink: '#161615', // near-black header / darkest text (NEAR brand neutral)
         'ink-2': '#2e2f2d',
-        body: '#383d3a', // default text
-        muted: '#626a66',
-        faint: '#8d948f',
+        // Readability rule (Sid): no grey text. Secondary tiers stay near
+        // black; hierarchy comes from size and weight, not from fading.
+        body: '#1f2321',
+        muted: '#2a2e2c',
+        faint: '#3a3f3c',
         canvas: '#f4f5f3', // neutral page background
         panel: '#ffffff',
         line: '#dfe3df',

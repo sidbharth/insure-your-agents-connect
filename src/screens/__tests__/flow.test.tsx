@@ -42,7 +42,7 @@ afterEach(() => {
   setPriceFetchFn(undefined);
 });
 
-/** Landing → picker → connect the given agents → agents screen. */
+/** Landing → picker → connect the given agents → straight to the quote. */
 async function connectAgents(ids: string[]) {
   renderAt('/');
   fireEvent.click(screen.getByTestId('connect-card'));
@@ -51,7 +51,7 @@ async function connectAgents(ids: string[]) {
   }
   fireEvent.click(screen.getByTestId('flow-connect'));
   await waitFor(() =>
-    expect(screen.getByTestId('screen-FlowAgents')).toBeInTheDocument(),
+    expect(screen.getByTestId('screen-FlowQuote')).toBeInTheDocument(),
   );
 }
 
@@ -83,7 +83,7 @@ describe('landing and picker', () => {
     expect(screen.getByTestId('flow-connect')).toBeDisabled();
   });
 
-  it('connecting prices unpaid enrollments and shows the agent details', async () => {
+  it('connecting prices unpaid enrollments and lands on the quote', async () => {
     await connectAgents(['procurement-bot', 'legacy-bot']);
 
     const state = useStore.getState();
@@ -92,17 +92,14 @@ describe('landing and picker', () => {
     for (const e of enrolled) {
       expect(e.effectiveAt).toBe(0); // priced, not yet paid
     }
-    expect(screen.getByTestId('flow-agent-row-procurement-bot')).toBeInTheDocument();
-    expect(screen.getByTestId('flow-agent-row-legacy-bot')).toHaveTextContent(
-      FLOW_COPY.agentsNoAttestation,
-    );
+    expect(screen.getByTestId('quote-row-procurement-bot')).toBeInTheDocument();
+    expect(screen.getByTestId('quote-row-legacy-bot')).toBeInTheDocument();
   });
 });
 
 describe('quote', () => {
   it('totals are the plain sums and legacy carries the exclusion chip', async () => {
     await connectAgents(['procurement-bot', 'legacy-bot']);
-    fireEvent.click(screen.getByTestId('flow-agents-continue'));
 
     expect(screen.getByTestId('screen-FlowQuote')).toBeInTheDocument();
     // $50,000 cap each; premiums $300 (0.6%) + $600 (1.2%).
@@ -115,7 +112,6 @@ describe('quote', () => {
 
   it('expanding an agent row shows the frozen rate breakdown', async () => {
     await connectAgents(['procurement-bot', 'legacy-bot']);
-    fireEvent.click(screen.getByTestId('flow-agents-continue'));
 
     fireEvent.click(screen.getByTestId('quote-row-procurement-bot'));
     const clean = screen.getByTestId('quote-breakdown-procurement-bot');
@@ -131,7 +127,6 @@ describe('quote', () => {
 
   it('removing an agent from the expanded row recomputes the quote', async () => {
     await connectAgents(['procurement-bot', 'legacy-bot']);
-    fireEvent.click(screen.getByTestId('flow-agents-continue'));
     expect(screen.getByTestId('quote-total-premium')).toHaveTextContent('$900');
 
     fireEvent.click(screen.getByTestId('quote-row-legacy-bot'));
@@ -153,7 +148,6 @@ describe('quote', () => {
 
   it('the agents carry distinct control profiles that price differently', async () => {
     await connectAgents(['payables-bot', 'treasury-bot', 'refunds-bot']);
-    fireEvent.click(screen.getByTestId('flow-agents-continue'));
 
     // payables skips human approval (0.9%), treasury skips timelock and
     // kill switch (1.1%), refunds skips every optional control (ceiling).
@@ -168,6 +162,24 @@ describe('quote', () => {
     expect(ceiling).toHaveTextContent('No human approval above threshold');
     expect(ceiling).toHaveTextContent(FLOW_COPY.quoteBExcluded);
     expect(ceiling).toHaveTextContent('3.0% × $50,000 = $1,500');
+  });
+
+  it('the expanded row carries the cover map and the claim disclosures', async () => {
+    await connectAgents(['legacy-bot']);
+
+    fireEvent.click(screen.getByTestId('quote-row-legacy-bot'));
+    // Coverage B is excluded on the map for an agent without attestation;
+    // the rest show their per-event limits in $NEAR with the USD anchor.
+    expect(screen.getByTestId('cover-map-legacy-bot-B')).toHaveTextContent(
+      FLOW_COPY.coverMapExcluded,
+    );
+    // Coverage A at the $50,000 cap and the pinned $3.00 rate.
+    expect(screen.getByTestId('cover-map-legacy-bot-A')).toHaveTextContent('16,667');
+    expect(screen.getByTestId('cover-map-legacy-bot-A')).toHaveTextContent('$50,000');
+    // Deductible, limits, and claims disclosures sit inside the dropdown.
+    const panel = screen.getByTestId('cover-map-legacy-bot').parentElement!;
+    expect(panel).toHaveTextContent(FLOW_COPY.deductibleBody);
+    expect(panel).toHaveTextContent(FLOW_COPY.claimsBody);
   });
 });
 
@@ -209,7 +221,6 @@ function expectActivated(ids: string[]) {
 describe('disclosures, signing, and payment', () => {
   it('quote accept leads through A to F into signing, then payment upfront activates cover', async () => {
     await connectAgents(['procurement-bot', 'payables-bot']);
-    fireEvent.click(screen.getByTestId('flow-agents-continue'));
     await agreeAndSign();
 
     // The stake option is highlighted as recommended with the credits tag.
@@ -230,7 +241,6 @@ describe('disclosures, signing, and payment', () => {
 
   it('pay with stake runs the staking demo and activates cover', async () => {
     await connectAgents(['treasury-bot']);
-    fireEvent.click(screen.getByTestId('flow-agents-continue'));
     await agreeAndSign();
 
     fireEvent.click(screen.getByTestId('pay-stake'));
@@ -244,9 +254,33 @@ describe('disclosures, signing, and payment', () => {
     expectActivated(['treasury-bot']);
   });
 
+  it('the who box on Coverage B names excluded agents', async () => {
+    await connectAgents(['procurement-bot', 'legacy-bot']);
+    fireEvent.click(screen.getByTestId('flow-quote-accept'));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('terms-page-A')).toBeInTheDocument(),
+    );
+    // On Coverage A both agents are covered.
+    expect(screen.getByTestId('terms-who-legacy-bot')).not.toHaveTextContent(
+      FLOW_COPY.coverMapExcluded,
+    );
+    fireEvent.click(screen.getByTestId('terms-acknowledge'));
+    fireEvent.click(screen.getByTestId('terms-agree'));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('terms-page-B')).toBeInTheDocument(),
+    );
+    expect(screen.getByTestId('terms-who-legacy-bot')).toHaveTextContent(
+      FLOW_COPY.coverMapExcluded,
+    );
+    expect(screen.getByTestId('terms-who-procurement-bot')).not.toHaveTextContent(
+      FLOW_COPY.coverMapExcluded,
+    );
+  });
+
   it('the payment page is locked until the signature is recorded', async () => {
     await connectAgents(['procurement-bot']);
-    fireEvent.click(screen.getByTestId('flow-agents-continue'));
     fireEvent.click(screen.getByTestId('flow-quote-accept'));
     // Jumping to payment before signing snaps back into the disclosures.
     await waitFor(() =>
@@ -295,6 +329,19 @@ describe('copy rules', () => {
       FLOW_COPY.quoteBExcluded,
       FLOW_COPY.quoteRemove,
       FLOW_COPY.totalRate,
+      ...Object.values(FLOW_COPY.quoteColumns),
+      FLOW_COPY.coverMapTitle,
+      FLOW_COPY.coverMapExcluded,
+      FLOW_COPY.coverMapLimitNote,
+      FLOW_COPY.deductibleTitle,
+      FLOW_COPY.deductibleBody,
+      FLOW_COPY.limitsTitle,
+      FLOW_COPY.limitsBody('16,667 $NEAR', '$50,000'),
+      FLOW_COPY.claimsTitle,
+      FLOW_COPY.claimsBody,
+      FLOW_COPY.termsWhoTitle,
+      FLOW_COPY.termsWhoExcludedReason,
+      FLOW_COPY.termsDepletion,
       FLOW_COPY.payTitle,
       FLOW_COPY.paySub,
       FLOW_COPY.payUpfrontTitle,
