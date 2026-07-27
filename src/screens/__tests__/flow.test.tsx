@@ -20,6 +20,7 @@ import { setLatencyTestMode } from '../../lib/latency';
 import { useStore } from '../../store';
 import { setPriceFetchFn } from '../../store/priceFeed';
 import { CONNECTABLE_AGENT_IDS, resetFlowState } from '../flow/flowState';
+import { QUOTE_EXAMPLES } from '../flow/FlowQuote';
 
 function renderAt(path: string) {
   return render(
@@ -96,6 +97,42 @@ describe('quote', () => {
     expect(screen.getByTestId('quote-total-premium')).toHaveTextContent('$900');
     expect(screen.getByTestId('quote-row-legacy-bot')).toHaveTextContent(
       FLOW_COPY.quoteBExcluded,
+    );
+  });
+
+  it('expanding an agent row shows the frozen rate breakdown', async () => {
+    await connectAgents(['procurement-bot', 'legacy-bot']);
+    fireEvent.click(screen.getByTestId('flow-agents-continue'));
+
+    fireEvent.click(screen.getByTestId('quote-row-procurement-bot'));
+    const clean = screen.getByTestId('quote-breakdown-procurement-bot');
+    expect(clean).toHaveTextContent('Base rate (fully compliant)');
+    expect(clean).toHaveTextContent('0.6% × $50,000 = $300');
+
+    fireEvent.click(screen.getByTestId('quote-row-legacy-bot'));
+    const legacy = screen.getByTestId('quote-breakdown-legacy-bot');
+    expect(legacy).toHaveTextContent('No TEE attestation');
+    expect(legacy).toHaveTextContent(FLOW_COPY.quoteBExcluded);
+    expect(legacy).toHaveTextContent('1.2% × $50,000 = $600');
+  });
+
+  it('prices example configurations live, including a declined one', async () => {
+    await connectAgents(['procurement-bot']);
+    fireEvent.click(screen.getByTestId('flow-agents-continue'));
+
+    expect(screen.getByTestId('quote-examples')).toBeInTheDocument();
+    // Ladder ceiling: base 0.6 + all surcharges clamps at 3.0% = $1,500.
+    fireEvent.click(screen.getByTestId('example-row-ceiling'));
+    expect(screen.getByTestId('example-breakdown-ceiling')).toHaveTextContent(
+      '3.0% × $50,000 = $1,500',
+    );
+    // A tier-1 gate off is declined outright.
+    expect(screen.getByTestId('example-row-declined')).toHaveTextContent(
+      FLOW_COPY.exampleDeclined,
+    );
+    fireEvent.click(screen.getByTestId('example-row-declined'));
+    expect(screen.getByTestId('example-breakdown-declined')).toHaveTextContent(
+      FLOW_COPY.exampleDeclinedNote,
     );
   });
 });
@@ -186,10 +223,17 @@ describe('copy rules', () => {
       FLOW_COPY.agentsNoAttestation,
       FLOW_COPY.quoteTitle,
       FLOW_COPY.quoteSub,
+      FLOW_COPY.quoteHint,
       FLOW_COPY.quoteTotalCover,
       FLOW_COPY.quoteAnnualPremium,
       FLOW_COPY.quoteAccept,
       FLOW_COPY.quoteBExcluded,
+      FLOW_COPY.totalRate,
+      FLOW_COPY.examplesTitle,
+      FLOW_COPY.examplesSub('$50,000'),
+      FLOW_COPY.exampleDeclined,
+      FLOW_COPY.exampleDeclinedNote,
+      ...QUOTE_EXAMPLES.map((ex) => ex.label),
       FLOW_COPY.payTitle,
       FLOW_COPY.paySub,
       FLOW_COPY.payUpfrontTitle,
