@@ -22,6 +22,8 @@ let selectedAgentIds: string[] = [];
 let paymentMethod: FlowPaymentMethod | undefined;
 /** Highest coverage page (1..6) the user has agreed to. */
 let agreedPages = 0;
+/** The signature was recorded; unlocks the payment page. */
+let signed = false;
 
 export function getSelectedAgentIds(): string[] {
   return selectedAgentIds;
@@ -47,9 +49,18 @@ export function markPageAgreed(page: number): void {
   agreedPages = Math.max(agreedPages, page);
 }
 
+export function isSigned(): boolean {
+  return signed;
+}
+
+export function markSigned(): void {
+  signed = true;
+}
+
 /** Back to a fresh flow (landing mount and tests). */
 export function resetFlowState(): void {
   selectedAgentIds = [];
   paymentMethod = undefined;
   agreedPages = 0;
+  signed = false;
 }

@@ -170,7 +170,7 @@ export default function FlowQuote() {
         <button
           type="button"
           data-testid="flow-quote-accept"
-          onClick={() => navigate('/flow/pay')}
+          onClick={() => navigate('/flow/terms/1')}
           className="rounded-lg bg-accent px-3.5 py-2 text-sm font-semibold text-ink"
         >
           {FLOW_COPY.quoteAccept}

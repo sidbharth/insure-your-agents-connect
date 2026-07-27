@@ -146,7 +146,7 @@ export default function FlowTerms() {
             <button
               type="button"
               data-testid="terms-back"
-              onClick={() => (page > 1 ? navigate(`/flow/terms/${page - 1}`) : navigate('/flow/pay'))}
+              onClick={() => (page > 1 ? navigate(`/flow/terms/${page - 1}`) : navigate('/flow/quote'))}
               className="text-sm font-semibold text-muted"
             >
               Back

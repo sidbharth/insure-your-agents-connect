@@ -135,55 +135,84 @@ describe('quote', () => {
   });
 });
 
-describe('payment, disclosures, and signing', () => {
-  it('walks pay upfront through A to F and signing activates cover', async () => {
+/** Quote accept → disclosures A to F → signature → payment page. */
+async function agreeAndSign() {
+  fireEvent.click(screen.getByTestId('flow-quote-accept'));
+  for (const route of ['A', 'B', 'C', 'D', 'E', 'F']) {
+    await waitFor(() =>
+      expect(screen.getByTestId(`terms-page-${route}`)).toBeInTheDocument(),
+    );
+    // Agreement is gated on the per-page acknowledgment.
+    expect(screen.getByTestId('terms-agree')).toBeDisabled();
+    fireEvent.click(screen.getByTestId('terms-acknowledge'));
+    fireEvent.click(screen.getByTestId('terms-agree'));
+  }
+  await waitFor(() =>
+    expect(screen.getByTestId('screen-FlowSign')).toBeInTheDocument(),
+  );
+  expect(screen.getByTestId('sign-exclusions')).toBeInTheDocument();
+  // Signing is gated on the final acknowledgment.
+  expect(screen.getByTestId('flow-sign')).toBeDisabled();
+  fireEvent.click(screen.getByTestId('sign-acknowledge'));
+  fireEvent.click(screen.getByTestId('flow-sign'));
+  await waitFor(() =>
+    expect(screen.getByTestId('screen-FlowPay')).toBeInTheDocument(),
+  );
+}
+
+function expectActivated(ids: string[]) {
+  const state = useStore.getState();
+  for (const id of ids) {
+    const enrollment = state.enrollments.find((e) => e.agentId === id);
+    expect(enrollment).toBeDefined();
+    expect(enrollment!.effectiveAt).toBeGreaterThan(0);
+    expect(state.agents.find((a) => a.id === id)?.status).toBe('Active');
+  }
+}
+
+describe('disclosures, signing, and payment', () => {
+  it('quote accept leads through A to F into signing, then payment upfront activates cover', async () => {
     await connectAgents(['procurement-bot', 'payables-bot']);
     fireEvent.click(screen.getByTestId('flow-agents-continue'));
-    fireEvent.click(screen.getByTestId('flow-quote-accept'));
+    await agreeAndSign();
 
-    expect(screen.getByTestId('screen-FlowPay')).toBeInTheDocument();
+    // The stake option is highlighted as recommended with the credits tag.
+    expect(screen.getByTestId('pay-stake-recommended')).toHaveTextContent(
+      FLOW_COPY.payRecommended,
+    );
+    expect(screen.getByTestId('pay-stake-credit')).toHaveTextContent(
+      FLOW_COPY.payStakeCredit,
+    );
+
     fireEvent.click(screen.getByTestId('pay-upfront'));
-
-    for (const route of ['A', 'B', 'C', 'D', 'E', 'F']) {
-      await waitFor(() =>
-        expect(screen.getByTestId(`terms-page-${route}`)).toBeInTheDocument(),
-      );
-      // Agreement is gated on the per-page acknowledgment.
-      expect(screen.getByTestId('terms-agree')).toBeDisabled();
-      fireEvent.click(screen.getByTestId('terms-acknowledge'));
-      fireEvent.click(screen.getByTestId('terms-agree'));
-    }
-
-    await waitFor(() =>
-      expect(screen.getByTestId('screen-FlowSign')).toBeInTheDocument(),
-    );
-    expect(screen.getByTestId('sign-statement')).toHaveTextContent(
-      FLOW_COPY.signStatement,
-    );
-    expect(screen.getByTestId('sign-exclusions')).toBeInTheDocument();
-
-    // Signing is gated on the final acknowledgment.
-    expect(screen.getByTestId('flow-sign')).toBeDisabled();
-    fireEvent.click(screen.getByTestId('sign-acknowledge'));
-    fireEvent.click(screen.getByTestId('flow-sign'));
+    fireEvent.click(screen.getByTestId('pay-confirm'));
     await waitFor(() =>
       expect(screen.getByTestId('screen-Policies')).toBeInTheDocument(),
     );
-
-    const state = useStore.getState();
-    for (const id of ['procurement-bot', 'payables-bot']) {
-      const enrollment = state.enrollments.find((e) => e.agentId === id);
-      expect(enrollment).toBeDefined();
-      expect(enrollment!.effectiveAt).toBeGreaterThan(0);
-      expect(state.agents.find((a) => a.id === id)?.status).toBe('Active');
-    }
+    expectActivated(['procurement-bot', 'payables-bot']);
   });
 
-  it('pay with stake records the choice and reaches the disclosures', async () => {
+  it('pay with stake runs the staking demo and activates cover', async () => {
     await connectAgents(['treasury-bot']);
     fireEvent.click(screen.getByTestId('flow-agents-continue'));
-    fireEvent.click(screen.getByTestId('flow-quote-accept'));
+    await agreeAndSign();
+
     fireEvent.click(screen.getByTestId('pay-stake'));
+    // Premium $550 at the pinned $3.00 rate; stake sized at a 10% reward
+    // rate: (550 / 3) / 0.1 ≈ 1,833 $NEAR.
+    expect(screen.getByTestId('stake-note')).toHaveTextContent('1,833');
+    fireEvent.click(screen.getByTestId('pay-confirm'));
+    await waitFor(() =>
+      expect(screen.getByTestId('screen-Policies')).toBeInTheDocument(),
+    );
+    expectActivated(['treasury-bot']);
+  });
+
+  it('the payment page is locked until the signature is recorded', async () => {
+    await connectAgents(['procurement-bot']);
+    fireEvent.click(screen.getByTestId('flow-agents-continue'));
+    fireEvent.click(screen.getByTestId('flow-quote-accept'));
+    // Jumping to payment before signing snaps back into the disclosures.
     await waitFor(() =>
       expect(screen.getByTestId('terms-page-A')).toBeInTheDocument(),
     );
@@ -234,6 +263,20 @@ describe('copy rules', () => {
       FLOW_COPY.payStakeTitle,
       FLOW_COPY.payStakeBody,
       FLOW_COPY.payChoose,
+      FLOW_COPY.payRecommended,
+      FLOW_COPY.payStakeCredit,
+      FLOW_COPY.payConfirmUpfrontTitle,
+      FLOW_COPY.payConfirmStakeTitle,
+      FLOW_COPY.payStakeNote,
+      FLOW_COPY.payStakeEstimate('1,833 $NEAR'),
+      FLOW_COPY.payConfirmUpfront,
+      FLOW_COPY.payConfirmStake,
+      FLOW_COPY.payBack,
+      FLOW_COPY.payUpfrontTheaterTitle,
+      ...FLOW_COPY.payUpfrontSteps,
+      FLOW_COPY.payStakeTheaterTitle,
+      ...FLOW_COPY.payStakeSteps,
+      ...Object.values(FLOW_COPY.payLabels),
       FLOW_COPY.termsProgress(3),
       FLOW_COPY.termsSub,
       FLOW_COPY.termsCovered,
@@ -258,7 +301,6 @@ describe('copy rules', () => {
       FLOW_COPY.signTheaterTitle,
       ...FLOW_COPY.signSteps,
       ...Object.values(FLOW_COPY.signLabels),
-      ...Object.values(FLOW_COPY.paymentMethodNames),
     ];
     for (const s of strings) {
       expect(s).not.toMatch(forbidden);

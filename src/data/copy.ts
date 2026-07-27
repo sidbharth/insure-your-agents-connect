@@ -624,6 +624,36 @@ export const FLOW_COPY = {
   payStakeTitle: 'Pay with stake',
   payStakeBody: 'The premium is funded from staking rewards over the policy year.',
   payChoose: 'Choose →',
+  payRecommended: 'Recommended',
+  payStakeCredit: 'Get $1000 in NEAR AI credits',
+  payConfirmUpfrontTitle: 'Confirm payment',
+  payConfirmStakeTitle: 'Confirm stake',
+  payStakeNote:
+    'Rewards from the staked balance fund the premium over the policy year. The stake remains yours.',
+  payStakeEstimate: (stake: string) =>
+    `${stake} staked at a 10% reward rate funds the premium in full.`,
+  payConfirmUpfront: 'Confirm payment →',
+  payConfirmStake: 'Confirm stake →',
+  payBack: 'Back to payment options',
+  payUpfrontTheaterTitle: 'Settling the premium',
+  payUpfrontSteps: [
+    'Fetching the live rate…',
+    'Converting the premium…',
+    'Debiting the wallet…',
+    'Recording the payment…',
+  ],
+  payStakeTheaterTitle: 'Setting up the stake',
+  payStakeSteps: [
+    'Locking stake with the programme validator…',
+    'Routing rewards to the premium schedule…',
+    'Recording the funding plan…',
+    'Attaching cover…',
+  ],
+  payLabels: {
+    premium: 'Annual premium',
+    settlesAs: 'Settles as',
+    stake: 'Estimated stake',
+  },
   termsProgress: (n: number) => `Part ${n} of 6`,
   termsSub: 'Read each coverage in full. Your agreement to each part is recorded.',
   termsCovered: 'What is covered',
@@ -636,23 +666,14 @@ export const FLOW_COPY = {
   signExclusions: 'Excluded across every coverage',
   signAck: 'I have reviewed each coverage, the exclusions above, and the annual premium.',
   signStatement:
-    'By signing you agree to Coverages A through F as presented and acknowledged, part by part. Cover starts the moment you sign.',
-  signButton: 'Sign and start cover',
-  signTheaterTitle: 'Binding cover',
-  signSteps: [
-    'Recording signatures…',
-    'Collecting the premium…',
-    'Attaching cover…',
-  ],
+    'By signing you agree to Coverages A through F as presented and acknowledged, part by part. Cover attaches the moment your payment is confirmed.',
+  signButton: 'Sign and make payment →',
+  signTheaterTitle: 'Recording the signature',
+  signSteps: ['Recording signatures…', 'Preparing the payment…'],
   signLabels: {
     agents: 'Agents',
     cover: 'Total cover',
     premium: 'Annual premium',
-    payment: 'Payment',
-  },
-  paymentMethodNames: {
-    upfront: 'Upfront',
-    stake: 'With stake',
   },
 } as const;
 

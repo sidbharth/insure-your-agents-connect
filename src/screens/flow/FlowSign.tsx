@@ -1,9 +1,9 @@
 /**
- * Connect flow, final step — signature (route /flow/sign). Signing collects
- * the premium through the real payment port and activates the enrollments,
- * so cover attaches the moment the signature lands. The stake settlement
- * path currently records the choice and settles like upfront; the staking
- * mechanics arrive in a later iteration.
+ * Connect flow — signature (route /flow/sign), reached after all six
+ * coverage disclosures are agreed. Signing records the agreement and hands
+ * off to the payment page; cover attaches when the payment there is
+ * confirmed. The cross-coverage exclusions sit above the signature so the
+ * consent is complete.
  */
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -11,14 +11,9 @@ import { LatencyTheater } from '../../components/LatencyTheater';
 import { SimulatedBadge } from '../../components/SimulatedBadge';
 import { EXCLUSION_WALL, FLOW_COPY } from '../../data/copy';
 import { formatUsd } from '../../lib/money';
-import { executePayment, PaymentAbortedError } from '../../lib/payments';
 import { useStore } from '../../store';
 import { capUsdFor } from '../purchase/enroll';
-import {
-  getAgreedPages,
-  getPaymentMethod,
-  getSelectedAgentIds,
-} from './flowState';
+import { getAgreedPages, getSelectedAgentIds, markSigned } from './flowState';
 
 export default function FlowSign() {
   const enrollments = useStore((s) => s.enrollments);
@@ -27,7 +22,6 @@ export default function FlowSign() {
   const [signing, setSigning] = useState(false);
   const [acknowledged, setAcknowledged] = useState(false);
   const selected = getSelectedAgentIds();
-  const method = getPaymentMethod() ?? 'upfront';
 
   // The signature page is reachable only after all six coverages are agreed.
   useEffect(() => {
@@ -42,22 +36,6 @@ export default function FlowSign() {
   const totalCoverUsd = selected.reduce((a, id) => a + capUsdFor(state, id), 0);
   const totalPremiumUsd = live.reduce((a, e) => a + e.premiumUsd, 0);
 
-  const sign = async () => {
-    const gen = useStore.getState().resetGeneration;
-    try {
-      const receipt = await executePayment(
-        'initial',
-        totalPremiumUsd,
-        { agentIds: [...selected] },
-        { stale: () => useStore.getState().resetGeneration !== gen },
-      );
-      useStore.getState().activateEnrollments(receipt);
-      navigate('/policies');
-    } catch (err) {
-      if (!(err instanceof PaymentAbortedError)) throw err;
-    }
-  };
-
   return (
     <div className="mx-auto max-w-shell px-6 py-8" data-testid="screen-FlowSign">
       <div className="mx-auto max-w-[680px]">
@@ -67,7 +45,7 @@ export default function FlowSign() {
         <p className="mt-1 text-sm text-muted">{FLOW_COPY.signSub}</p>
 
         <div className="mt-4 rounded-card border border-line bg-panel p-5 shadow-card">
-          <div className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
             <SummaryCell
               label={FLOW_COPY.signLabels.agents}
               value={String(selected.length)}
@@ -81,10 +59,6 @@ export default function FlowSign() {
               label={FLOW_COPY.signLabels.premium}
               value={formatUsd(totalPremiumUsd)}
               mono
-            />
-            <SummaryCell
-              label={FLOW_COPY.signLabels.payment}
-              value={FLOW_COPY.paymentMethodNames[method]}
             />
           </div>
 
@@ -127,9 +101,10 @@ export default function FlowSign() {
               className="mt-4"
               title={FLOW_COPY.signTheaterTitle}
               steps={FLOW_COPY.signSteps.map((label) => ({ label }))}
-              totalMs={2600}
+              totalMs={1800}
               onDone={() => {
-                void sign();
+                markSigned();
+                navigate('/flow/pay');
               }}
             />
           ) : (
