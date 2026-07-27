@@ -228,7 +228,7 @@ export const EVIDENCE_ITEM_LABELS: Record<number, string> = {
   6: 'Attested input/output records (Coverage B)',
   7: 'Credential access logs + rotation evidence (Coverage C)',
   8: 'Guardrail spec + verification history + failing log line (Coverage D)',
-  9: 'Counterparty demand (Coverage E)',
+  9: 'Counterparty demand',
   10: 'Containment record',
   11: 'Valuation inputs',
   12: 'Recovery actions record',
@@ -529,7 +529,7 @@ export const CLAIM_DEMO_SCENARIOS: ClaimDemoScenarioCopy[] = [
     title: 'Blocked injection attempt',
     summary:
       'An injection attempt was caught and refused before any value moved. Nothing was lost, the event is reportable, and the investigation costs are covered.',
-    outcome: 'Near miss under Coverage F',
+    outcome: 'Near miss under Coverage E',
     outcomeKind: 'nearMiss',
   },
   {

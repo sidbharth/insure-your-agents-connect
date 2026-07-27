@@ -220,7 +220,7 @@ function narrativeFor(scenarioId: ScenarioId, agent: Agent, lossUsd: number): st
     case 'S-09':
       return `${agent.name} paid ${loss} to an unfamiliar address after processing a supplier catalogue page. The payee was on the whitelist via a spoofed resolvable name; the transfer was under cap and in-mandate. Anomaly monitoring flagged the pattern within minutes; the kill switch was fired immediately after.`;
     case 'S-17':
-      return `${agent.name}'s input filter caught a crafted instruction embedded in an inbound invoice attachment and refused the tool call. No value moved. The attempt was investigated, the source blocked, and the incident is reported as a near-miss under Coverage F (investigation and response costs).`;
+      return `${agent.name}'s input filter caught a crafted instruction embedded in an inbound invoice attachment and refused the tool call. No value moved. The attempt was investigated, the source blocked, and the incident is reported as a near miss under Coverage E, which pays investigation and response costs.`;
     case 'S-18':
       return `Session signing credentials for ${agent.name} were exfiltrated from the disclosed key map and used to move ${loss} without the agent or the Principal initiating anything. The kill switch was fired on the first alert, the affected whitelist entries frozen, and every implicated credential rotated. Tracing is under way.`;
     case 'S-24':
@@ -303,7 +303,7 @@ function artifactFor(
       11: {
         kind: 'valuation',
         title: 'Investigation-cost record',
-        body: `Itemised investigation and response costs (${formatUsd(SCENARIOS['S-17'].investigationCostUsd ?? 0)}) claimed under Coverage F.`,
+        body: `Itemised investigation and response costs (${formatUsd(SCENARIOS['S-17'].investigationCostUsd ?? 0)}) claimed under Coverage E.`,
       },
     },
     'S-18': {

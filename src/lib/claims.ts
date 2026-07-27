@@ -152,7 +152,7 @@ export function adjudicate(input: AdjudicationInput): AdjudicationResult {
       route = 'F';
       eligibilityReason =
         'Covered under F: near-miss investigation and response costs.';
-      eligibilityClause = 'Coverage F';
+      eligibilityClause = 'Coverage E';
       break;
     case 'S-18':
       route = 'C';
@@ -192,7 +192,7 @@ export function adjudicate(input: AdjudicationInput): AdjudicationResult {
       quantumLines.push({
         label: 'Covered quantum (investigation costs)',
         amount: formatUsd(coveredQuantumUsd),
-        clause: 'Coverage F',
+        clause: 'Coverage E',
       });
       break;
     default:

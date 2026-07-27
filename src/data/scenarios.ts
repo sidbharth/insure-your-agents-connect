@@ -196,7 +196,7 @@ export const SCENARIOS: ScenarioDef[] = [
       headline: 'Not covered: the countersigned mandate governs',
       routeLine: `No coverage applies to the excess. Coverage F covers cleanup and containment, up to ${formatUsd(perEventLimit('F', capUsd))} (15% of the cap).`,
       reason:
-        'The agent acted within the mandate as countersigned. The countersignature makes the mandate authoritative, and the policy does not pay for the entry error. Coverage F still covers cleanup and containment.',
+        'The agent acted within the mandate as countersigned. The countersignature makes the mandate authoritative, and we do not pay for the entry error. Coverage E still covers cleanup and containment.',
       clause: 'S-31, T3.2',
       control:
         'The countersignature. The Principal’s signature defines the mandate, so an unsigned intention cannot override a signed cap.',

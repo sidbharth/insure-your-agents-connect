@@ -166,7 +166,7 @@ export default function Coverage() {
         </div>
         <p className="mt-2 border-t border-line-soft pt-2 text-2xs text-faint">
           Sublimits apply within the per-event limit. Recovery
-          and bounty costs inside Coverage F are capped at 10% of the cap
+          and bounty costs inside Coverage E are capped at 10% of the cap
           ({formatUsd(0.1 * capUsd)}). One aggregate applies, and a single
           incident pays once. The retention per event is the{' '}
           <b className="num text-muted">greater of 500 $NEAR or 2% of the loss</b>,
