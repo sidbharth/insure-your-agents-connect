@@ -389,7 +389,7 @@ export const FLOW_TERMS: FlowTermsPage[] = [
     letter: 'A',
     title: 'Wrong payments by your agent',
     intro:
-      'Agents are good at moving money, but they can slip. A wrong payee, an amount past the limit, an asset they were never meant to touch. Coverage A pays you back when your agent moves money outside the rules you signed off on, whether or not anyone attacked it.',
+      'Agents are good at moving money, but they can still slip and send funds to the wrong payee, push an amount past its limit, or touch an asset they were never meant to use. Coverage A pays you back when your agent moves money outside the rules you signed off on, whether or not anyone attacked it.',
     covered: [
       'Payments to someone who is not on the approved list.',
       'Payments above the per transaction limit or faster than the allowed pace.',
@@ -400,7 +400,7 @@ export const FLOW_TERMS: FlowTermsPage[] = [
     notCovered: [
       'Payments that followed the rules, even if the outcome was bad.',
       'Losses from prices moving, including a stablecoin losing its peg.',
-      'Rules that were set wrong and signed anyway. What you signed is what counts.',
+      'Rules that were set wrong and signed anyway, because what you signed is what counts.',
       'The agent making a poor call while staying inside the rules.',
     ],
     payment:
@@ -412,7 +412,7 @@ export const FLOW_TERMS: FlowTermsPage[] = [
     letter: 'B',
     title: 'Your agent was tricked',
     intro:
-      'Attackers do not need to break in. They can trick your agent with a poisoned page, a fake instruction, or a bad tool, and every payment still looks like it followed the rules. Coverage B pays you back when your agent was manipulated.',
+      'An attacker does not need to break into your systems when they can trick your agent with a poisoned page, a fake instruction, or a compromised tool, and make every payment look like it followed the rules. Coverage B pays you back when your agent was manipulated into moving money.',
     covered: [
       'Hidden instructions planted in content the agent reads, like a product page or an attachment.',
       'Poisoned data or memory the agent relied on.',
@@ -423,11 +423,11 @@ export const FLOW_TERMS: FlowTermsPage[] = [
     notCovered: [
       'Losses where the tamper proof logs (attestation) cannot show the trick actually happened.',
       'Any loss while the agent runs without tamper proof logging. This whole coverage switches off in that case.',
-      'The agent simply getting it wrong on clean inputs. That is the model, not an attacker.',
+      'The agent simply getting it wrong on clean inputs, which is a model problem rather than an attack.',
       'Tricks aimed at a person rather than at the agent.',
     ],
     payment:
-      'Same as Coverage A. We pay back what left, plus the cost of responding to the incident. Your standard share comes off the payout.',
+      'We pay back what left on the same basis as Coverage A, plus the cost of responding to the incident. Your standard share comes off the payout.',
     acknowledgment:
       'I understand what Coverage B pays for and that it needs tamper proof logging.',
   },
@@ -436,7 +436,7 @@ export const FLOW_TERMS: FlowTermsPage[] = [
     letter: 'C',
     title: 'Stolen keys and credentials',
     intro:
-      'Your agent signs payments with keys. If those keys are stolen, an attacker can move money without touching the agent at all. Coverage C pays you back when credentials you told us about are stolen or misused.',
+      'Your agent signs payments with keys, and if those keys are stolen an attacker can move money without touching the agent at all. Coverage C pays you back when the credentials you told us about are stolen or misused.',
     covered: [
       'Stolen or misused agent session keys.',
       'Compromised key shares inside the setup you disclosed.',
@@ -457,7 +457,7 @@ export const FLOW_TERMS: FlowTermsPage[] = [
     letter: 'D',
     title: 'A safety control failed',
     intro:
-      'Safety controls are supposed to catch mistakes before money moves. A limit check, a holding delay, a kill switch. Coverage D pays you back when one of those controls fails to do its job and a loss gets through.',
+      'Safety controls like limit checks, holding delays, and kill switches are supposed to catch mistakes before money moves. Coverage D pays you back when one of those controls fails to do its job and a loss gets through.',
     covered: [
       'A limit check that let an oversized payment through. We cover the amount above the limit.',
       'A holding delay that failed to hold a large payment. We cover what should have been held.',
@@ -467,7 +467,7 @@ export const FLOW_TERMS: FlowTermsPage[] = [
     notCovered: [
       'Controls that are not on your agreed list.',
       'Failures the logs cannot verify.',
-      'The model failing to be careful. Judgment is not a safety control.',
+      'The model failing to be careful, since judgment is not a safety control.',
       'The part of a loss the control could not have stopped even if it worked.',
     ],
     payment:
@@ -480,7 +480,7 @@ export const FLOW_TERMS: FlowTermsPage[] = [
     letter: 'E',
     title: 'Response and recovery costs',
     intro:
-      'When something goes wrong, the response itself costs money. Investigators, tracing, freezing funds, new keys. Coverage E pays those bills, even for close calls that never lost a dollar but deserve a look.',
+      'When something goes wrong, it costs money to pay for investigators, tracing, freezing funds, and rotating new keys. Coverage E pays those bills, even for close calls that don’t actually result in losses.',
     covered: [
       'Forensic investigation of the agent and the chain data.',
       'Tracing and recovery work, including approved bounties and legal freezes.',
@@ -489,7 +489,7 @@ export const FLOW_TERMS: FlowTermsPage[] = [
       'Looking into close calls, like a blocked attack or a triggered kill switch.',
     ],
     notCovered: [
-      'Costs beyond this coverage\u2019s limit. Recovery and bounty spending has its own smaller cap inside it.',
+      'Costs beyond this coverage’s limit, noting that recovery and bounty spending has its own smaller cap inside it.',
       'Money you did not earn while the agent was down, unless you added that cover separately.',
       'Damage to your reputation and future profits.',
     ],
@@ -609,13 +609,13 @@ export const FLOW_COPY = {
   coverMapLimitNote: 'Each figure is the most we pay out for a single incident under that coverage.',
   deductibleTitle: 'Your share of each claim',
   deductibleBody:
-    'When we pay a claim, a small first slice stays with you. It is the greater of 500 $NEAR or 2% of the loss. You never pay it up front. We simply subtract it from the payout. And if a safety control failed after passing its latest check, we skip your share entirely.',
+    'When we pay a claim, a small first slice of the loss stays with you. That slice is the greater of 500 $NEAR or 2% of the loss, and you never pay it up front because we simply subtract it from the payout. If a safety control failed after passing its latest check, we skip your share entirely.',
   limitsTitle: 'How the limits work',
   limitsBody: (capNear: string, capUsd: string) =>
-    `This agent has ${capNear} (${capUsd}) of cover for the year. A single incident pays out up to the limit shown for its coverage. Every payout uses up part of the yearly amount. If it runs out, the agent is no longer covered for the rest of the year. You can restore the full amount once for an updated price.`,
+    `This agent has ${capNear} (${capUsd}) of cover for the year, and a single incident pays out up to the limit shown for its coverage type. Every payout uses up part of that yearly amount, so if it runs out the agent is no longer covered for the rest of the year. You can restore the full amount once for an updated price.`,
   claimsTitle: 'Claims',
   claimsBody:
-    'File as many claims as you need. There is no cap on the count. Each incident carries its own share. If several losses trace back to the same root cause, they count as one incident with one limit and one share.',
+    'You can file as many claims as you need, and each incident carries its own share. The one grouping rule is that losses tracing back to the same root cause count as one incident, with one limit and one share.',
   payTitle: 'Payment',
   paySub: 'Choose how to pay for the year.',
   payUpfrontTitle: 'Pay upfront',
@@ -628,7 +628,7 @@ export const FLOW_COPY = {
   payConfirmUpfrontTitle: 'Confirm payment',
   payConfirmStakeTitle: 'Confirm stake',
   payStakeNote:
-    'Rewards from your stake pay for the cover as the year runs. The stake stays yours.',
+    'Rewards from your stake pay for the cover as the year runs, and the stake itself stays yours.',
   payStakeEstimate: (stake: string) =>
     `${stake} staked at a 10% reward rate covers the yearly price in full.`,
   payConfirmUpfront: 'Confirm payment →',
@@ -659,7 +659,7 @@ export const FLOW_COPY = {
   termsWhoTitle: 'Who this coverage applies to',
   termsWhoExcludedReason: 'runs without tamper proof logging',
   termsDepletion:
-    'One incident pays up to this amount. Every payout also uses up part of the agent’s yearly cover.',
+    'One incident pays up to this amount, and every payout also uses up part of the agent’s yearly cover.',
   termsCovered: 'What is covered',
   termsNotCovered: 'What is not covered',
   termsPayment: 'How payouts work',
@@ -668,7 +668,7 @@ export const FLOW_COPY = {
   termsAgree: 'Agree and continue →',
   signTitle: 'Signature',
   signSub: 'One last look, then sign to put your cover in force.',
-  signExclusions: 'Never covered, under any part',
+  signExclusions: 'What is never covered',
   signAck: 'I have reviewed each coverage, the exclusions above, and the yearly price.',
   signStatement:
     'By signing you agree to Coverages A through E as presented and acknowledged, part by part. Cover starts the moment your payment goes through.',
