@@ -161,7 +161,7 @@ export type EnrollOutcome =
  * prospective book (lib/concentration.enroll), price with the decision
  * frozen in, commit book + enrollment, flip status to Quoted.
  */
-export function enrollAgent(agentId: string): EnrollOutcome {
+export function enrollAgent(agentId: string, offStackCount = 0): EnrollOutcome {
   const s = useStore.getState();
   const agent = s.agents.find((a) => a.id === agentId);
   if (!agent) return { ok: false };
@@ -176,7 +176,10 @@ export function enrollAgent(agentId: string): EnrollOutcome {
   // Atomic prospective-book decision (plan §4b): the loading is decided as if
   // this enrollment were already on the book, then the book commits.
   const decision = bookEnroll(s.book, component, capUsd);
-  const priced = priceAgent(pricingInputFor(s, agent, mandate, decision.loadingApplied));
+  const priced = priceAgent({
+    ...pricingInputFor(s, agent, mandate, decision.loadingApplied),
+    offStackCount,
+  });
 
   if (priced.kind === 'declined') {
     s.setAgentStatus(agentId, 'Declined');

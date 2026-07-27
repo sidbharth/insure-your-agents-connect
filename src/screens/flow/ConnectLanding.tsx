@@ -16,7 +16,7 @@ import type { Tier2Control } from '../../store/types';
 import { TIER2_CONTROLS } from '../../store/types';
 import { newestMandate } from '../portfolio/helpers';
 import { enrollAgent, prepareImportedAgent } from '../purchase/enroll';
-import { recommendedCapUsd } from './stack';
+import { missingStackCount, recommendedCapUsd } from './stack';
 import {
   CONNECTABLE_AGENT_IDS,
   resetFlowState,
@@ -99,7 +99,8 @@ export default function ConnectLanding() {
         }
       }
       prepareImportedAgent(id);
-      enrollAgent(id);
+      const enrolled = useStore.getState().agents.find((a) => a.id === id);
+      enrollAgent(id, enrolled !== undefined ? missingStackCount(enrolled) : 0);
     }
     setPhase('processing');
   };

@@ -33,6 +33,13 @@ export interface PricingInput {
   openSet: boolean;
   /** Decided by concentration.ts at enrollment time (§4b). */
   concentrationLoading: boolean;
+  /**
+   * Recommended NEAR stack products the agent is missing (0..3). Adds a
+   * +0.1% post-clamp loading per missing product, so an off-spec agent
+   * always pays a higher rate on top of qualifying for lower cover.
+   * Optional so pre-flow callers are unaffected.
+   */
+  offStackCount?: number;
 }
 
 export interface PricingFlags {
@@ -193,6 +200,17 @@ export function priceAgent(input: PricingInput): PricingResult {
       clause: 'D2.3',
       group: 'loading',
       coverageEffect: 'added to the compromise-coverage rate',
+    });
+  }
+
+  const offStack = input.offStackCount ?? 0;
+  if (offStack > 0) {
+    loadingTenths += offStack;
+    breakdown.push({
+      label: `Off the recommended NEAR stack (${offStack} of 3 products missing)`,
+      points: offStack / 10,
+      clause: 'Recommended spec',
+      group: 'loading',
     });
   }
 

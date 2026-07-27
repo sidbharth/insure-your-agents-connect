@@ -41,6 +41,11 @@ export function recommendedCapUsd(agent: Agent): number {
   );
 }
 
+/** How many of the three recommended products the agent is missing. */
+export function missingStackCount(agent: Agent): number {
+  return stackRows(agent).filter((r) => !r.on).length;
+}
+
 export interface StackRow {
   key: 'ironclaw' | 'nearBank' | 'intents';
   on: boolean;
