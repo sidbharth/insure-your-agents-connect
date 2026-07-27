@@ -404,7 +404,7 @@ export const FLOW_TERMS: FlowTermsPage[] = [
       'The agent making a poor call while staying inside the rules.',
     ],
     payment:
-      'We pay back the money that actually left, valued at market prices from just before the incident, minus anything recovered. Your share, the greater of 500 $NEAR or 2% of the loss, comes off the payout.',
+      'We pay back the money that actually left, valued at market prices from just before the incident, minus anything recovered. Your share, the greater of 500 $NEAR at the price on the day we pay or 2% of the loss, comes off the payout.',
     acknowledgment: 'I understand what Coverage A pays for and what it does not.',
   },
   {
@@ -628,7 +628,7 @@ export const FLOW_COPY = {
   coverMapLimitNote: 'Each figure is the most we pay out for a single incident under that coverage.',
   deductibleTitle: 'Your share of each claim',
   deductibleBody:
-    'When we pay a claim, a small first slice of the loss stays with you. That slice is the greater of 500 $NEAR or 2% of the loss, and you never pay it up front because we simply subtract it from the payout. If a safety control failed after passing its latest check, we skip your share entirely.',
+    'When we pay a claim, a small first slice of the loss stays with you. That slice is the greater of 500 $NEAR, valued at the price on the day we pay, or 2% of the loss, and you never pay it up front because we simply subtract it from the payout. If a safety control failed after passing its latest check, we skip your share entirely.',
   limitsTitle: 'How the limits work',
   limitsBody: (capNear: string, capUsd: string) =>
     `This agent has ${capNear} (${capUsd}) of cover for the year, and a single incident pays out up to the limit shown for its coverage type. Every payout uses up part of that yearly amount, so if it runs out the agent is no longer covered for the rest of the year. You can restore the full amount once for an updated price.`,
