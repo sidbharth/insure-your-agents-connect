@@ -50,10 +50,9 @@ export default function FlowTerms() {
   const terms = FLOW_TERMS[page - 1];
   // All flow agents carry the same default cap today; the limit line shows
   // the per-agent figure at the largest cap among the connected agents.
-  const capUsd = Math.max(
-    SEED_CAP_USD,
-    ...selected.map((id) => capUsdFor(state, id)),
-  );
+  const capUsd = selected.length
+    ? Math.max(...selected.map((id) => capUsdFor(state, id)))
+    : SEED_CAP_USD;
   const limitUsd = perEventLimit(terms.route, capUsd);
 
   const agree = () => {

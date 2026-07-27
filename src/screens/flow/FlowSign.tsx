@@ -33,7 +33,9 @@ export default function FlowSign() {
   const live = enrollments.filter(
     (e) => selected.includes(e.agentId) && e.terminatedAt === undefined,
   );
-  const totalCoverUsd = selected.reduce((a, id) => a + capUsdFor(state, id), 0);
+  const maxCoverUsd = selected.length
+    ? Math.max(...selected.map((id) => capUsdFor(state, id)))
+    : 0;
   const totalPremiumUsd = live.reduce((a, e) => a + e.premiumUsd, 0);
 
   return (
@@ -52,7 +54,7 @@ export default function FlowSign() {
             />
             <SummaryCell
               label={FLOW_COPY.signLabels.cover}
-              value={formatUsd(totalCoverUsd)}
+              value={`up to ${formatUsd(maxCoverUsd)}`}
               mono
             />
             <SummaryCell

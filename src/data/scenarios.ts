@@ -160,7 +160,7 @@ export const SCENARIOS: ScenarioDef[] = [
       routeLine:
         'No coverage applies. The model conduct exclusion governs this event.',
       reason:
-        'The attested record shows clean inputs and an action within the mandate. The model produced an incorrect result on its own. The policy covers the delegation and the systems that enforce it, not the quality of the model’s output.',
+        'The attested record shows clean inputs and an action within the mandate. The model produced an incorrect result on its own. This cover protects what the agent is allowed to do and the safety controls that enforce it, not the quality of the model’s output.',
       clause: '4.9',
       control: 'None. This boundary is what keeps the risk class coverable.',
     }),

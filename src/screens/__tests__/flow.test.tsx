@@ -102,9 +102,12 @@ describe('quote', () => {
     await connectAgents(['procurement-bot', 'legacy-bot']);
 
     expect(screen.getByTestId('screen-FlowQuote')).toBeInTheDocument();
-    // $50,000 cap each; premiums $300 (0.6%) + $600 (1.2%).
-    expect(screen.getByTestId('quote-total-cover')).toHaveTextContent('$100,000');
-    expect(screen.getByTestId('quote-total-premium')).toHaveTextContent('$900');
+    // Caps are stack-sized: procurement $50,000 (0.6% = $300) and legacy
+    // $15,000 (1.2% = $180). The cover card shows the per-agent maximum.
+    expect(screen.getByTestId('quote-total-cover')).toHaveTextContent('up to');
+    expect(screen.getByTestId('quote-total-cover')).toHaveTextContent('$50,000');
+    expect(screen.getByTestId('quote-total-premium')).toHaveTextContent('$480');
+    expect(screen.getByTestId('quote-cover-legacy-bot')).toHaveTextContent('$15,000');
     expect(screen.getByTestId('quote-row-legacy-bot')).toHaveTextContent(
       FLOW_COPY.quoteBExcluded,
     );
@@ -122,12 +125,12 @@ describe('quote', () => {
     const legacy = screen.getByTestId('quote-breakdown-legacy-bot');
     expect(legacy).toHaveTextContent('No TEE attestation');
     expect(legacy).toHaveTextContent(FLOW_COPY.quoteBExcluded);
-    expect(legacy).toHaveTextContent('1.2% × $50,000 = $600');
+    expect(legacy).toHaveTextContent('1.2% × $15,000 = $180');
   });
 
   it('removing an agent from the expanded row recomputes the quote', async () => {
     await connectAgents(['procurement-bot', 'legacy-bot']);
-    expect(screen.getByTestId('quote-total-premium')).toHaveTextContent('$900');
+    expect(screen.getByTestId('quote-total-premium')).toHaveTextContent('$480');
 
     fireEvent.click(screen.getByTestId('quote-row-legacy-bot'));
     fireEvent.click(screen.getByTestId('quote-remove-legacy-bot'));
@@ -149,19 +152,20 @@ describe('quote', () => {
   it('the agents carry distinct control profiles that price differently', async () => {
     await connectAgents(['payables-bot', 'treasury-bot', 'refunds-bot']);
 
-    // payables skips human approval (0.9%), treasury skips timelock and
-    // kill switch (1.1%), refunds skips every optional control (ceiling).
+    // payables skips human approval (0.9% of its $40,000 cap), treasury
+    // skips timelock and kill switch (1.1% of $40,000), refunds skips every
+    // optional control (3.0% ceiling of its $30,000 cap).
     expect(screen.getByTestId('quote-row-payables-bot')).toHaveTextContent('0.9%');
-    expect(screen.getByTestId('quote-row-payables-bot')).toHaveTextContent('$450');
+    expect(screen.getByTestId('quote-row-payables-bot')).toHaveTextContent('$360');
     expect(screen.getByTestId('quote-row-treasury-bot')).toHaveTextContent('1.1%');
-    expect(screen.getByTestId('quote-row-treasury-bot')).toHaveTextContent('$550');
-    expect(screen.getByTestId('quote-row-refunds-bot')).toHaveTextContent('$1,500');
+    expect(screen.getByTestId('quote-row-treasury-bot')).toHaveTextContent('$440');
+    expect(screen.getByTestId('quote-row-refunds-bot')).toHaveTextContent('$900');
 
     fireEvent.click(screen.getByTestId('quote-row-refunds-bot'));
     const ceiling = screen.getByTestId('quote-breakdown-refunds-bot');
     expect(ceiling).toHaveTextContent('No human approval above threshold');
     expect(ceiling).toHaveTextContent(FLOW_COPY.quoteBExcluded);
-    expect(ceiling).toHaveTextContent('3.0% × $50,000 = $1,500');
+    expect(ceiling).toHaveTextContent('3.0% × $30,000 = $900');
   });
 
   it('the expanded row carries the cover map and the claim disclosures', async () => {
@@ -173,13 +177,35 @@ describe('quote', () => {
     expect(screen.getByTestId('cover-map-legacy-bot-B')).toHaveTextContent(
       FLOW_COPY.coverMapExcluded,
     );
-    // Coverage A at the $50,000 cap and the pinned $3.00 rate.
-    expect(screen.getByTestId('cover-map-legacy-bot-A')).toHaveTextContent('16,667');
-    expect(screen.getByTestId('cover-map-legacy-bot-A')).toHaveTextContent('$50,000');
+    // Coverage A at legacy's stack-sized $15,000 cap and the pinned rate.
+    expect(screen.getByTestId('cover-map-legacy-bot-A')).toHaveTextContent('5,000');
+    expect(screen.getByTestId('cover-map-legacy-bot-A')).toHaveTextContent('$15,000');
     // Deductible, limits, and claims disclosures sit inside the dropdown.
     const panel = screen.getByTestId('cover-map-legacy-bot').parentElement!;
     expect(panel).toHaveTextContent(FLOW_COPY.deductibleBody);
     expect(panel).toHaveTextContent(FLOW_COPY.claimsBody);
+  });
+
+  it('the recommended stack section sizes cover and names what is missing', async () => {
+    await connectAgents(['procurement-bot', 'legacy-bot']);
+
+    // procurement runs the full stack and gets the highest cover.
+    fireEvent.click(screen.getByTestId('quote-row-procurement-bot'));
+    expect(screen.getByTestId('stack-note-procurement-bot')).toHaveTextContent(
+      FLOW_COPY.stackFull,
+    );
+
+    // legacy runs none of it: base cover only, with the upsell naming all
+    // three products and the $50,000 it could reach.
+    fireEvent.click(screen.getByTestId('quote-row-legacy-bot'));
+    const note = screen.getByTestId('stack-note-legacy-bot');
+    expect(note).toHaveTextContent('IronClaw harness');
+    expect(note).toHaveTextContent('near.com banking');
+    expect(note).toHaveTextContent('NEAR Intents transfers');
+    expect(note).toHaveTextContent('$50,000');
+    expect(screen.getByTestId('stack-legacy-bot')).toHaveTextContent(
+      FLOW_COPY.stackCoverAmount,
+    );
   });
 });
 
@@ -244,9 +270,9 @@ describe('disclosures, signing, and payment', () => {
     await agreeAndSign();
 
     fireEvent.click(screen.getByTestId('pay-stake'));
-    // Premium $550 at the pinned $3.00 rate; stake sized at a 10% reward
-    // rate: (550 / 3) / 0.1 ≈ 1,833 $NEAR.
-    expect(screen.getByTestId('stake-note')).toHaveTextContent('1,833');
+    // Yearly price $440 at the pinned $3.00 rate; stake sized at a 10%
+    // reward rate is (440 / 3) / 0.1 ≈ 1,467 $NEAR.
+    expect(screen.getByTestId('stake-note')).toHaveTextContent('1,467');
     fireEvent.click(screen.getByTestId('pay-confirm'));
     await waitFor(() =>
       expect(screen.getByTestId('screen-Policies')).toBeInTheDocument(),
@@ -328,6 +354,14 @@ describe('copy rules', () => {
       FLOW_COPY.quoteAccept,
       FLOW_COPY.quoteBExcluded,
       FLOW_COPY.quoteRemove,
+      FLOW_COPY.quoteUpTo,
+      FLOW_COPY.quoteCoverEachSub,
+      FLOW_COPY.stackTitle,
+      FLOW_COPY.stackBase,
+      ...Object.values(FLOW_COPY.stackLabels),
+      FLOW_COPY.stackCoverAmount,
+      FLOW_COPY.stackFull,
+      FLOW_COPY.stackUpsell('NEAR Intents transfers', '$50,000'),
       FLOW_COPY.totalRate,
       ...Object.values(FLOW_COPY.quoteColumns),
       FLOW_COPY.coverMapTitle,

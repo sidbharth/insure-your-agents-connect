@@ -223,7 +223,7 @@ export default function Policies() {
       {/* -- page head ------------------------------------------------------ */}
       <div className="mb-4 flex flex-wrap items-start justify-between gap-5">
         <div>
-          <h1 className="text-lg">My policies</h1>
+          <h1 className="text-lg">My cover</h1>
           <div className="mt-1 text-sm text-muted">
             {operator.name}{' '}
             {verified ? (

@@ -10,10 +10,13 @@ import { useNavigate } from 'react-router-dom';
 import { LatencyTheater } from '../../components/LatencyTheater';
 import { SimulatedBadge } from '../../components/SimulatedBadge';
 import { FLOW_COPY, POSITIONING_LINE } from '../../data/copy';
+import { createDefaultMandate } from '../../data/seed';
 import { useStore } from '../../store';
 import type { Tier2Control } from '../../store/types';
 import { TIER2_CONTROLS } from '../../store/types';
+import { newestMandate } from '../portfolio/helpers';
 import { enrollAgent, prepareImportedAgent } from '../purchase/enroll';
+import { recommendedCapUsd } from './stack';
 import {
   CONNECTABLE_AGENT_IDS,
   resetFlowState,
@@ -74,10 +77,27 @@ export default function ConnectLanding() {
     const ids = CONNECTABLE_AGENT_IDS.filter((id) => ticked.has(id));
     if (ids.length === 0) return;
     setSelectedAgentIds(ids);
-    // Real machinery: control profile + countersigned mandate + priced
-    // enrollment per agent. Activation (payment) happens at signing.
+    // Real machinery: control profile + a mandate whose cap is sized by the
+    // agent's recommended-stack spec + countersigned enrollment pricing.
+    // Activation (payment) happens at signing.
     for (const id of ids) {
       applyControlProfile(id);
+      const s = useStore.getState();
+      const agent = s.agents.find((a) => a.id === id);
+      if (agent !== undefined) {
+        const capUsd = recommendedCapUsd(agent);
+        const latest = newestMandate(s.mandates[id]);
+        if (latest?.caps.perTx !== capUsd) {
+          const base = latest ?? createDefaultMandate();
+          s.saveMandate(id, {
+            ...base,
+            caps: { ...base.caps, perTx: capUsd },
+            countersigned: undefined,
+            inForceFrom: undefined,
+            inForceTo: undefined,
+          });
+        }
+      }
       prepareImportedAgent(id);
       enrollAgent(id);
     }

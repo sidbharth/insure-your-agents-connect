@@ -33,7 +33,7 @@ describe('app shell', () => {
     renderAt('/');
     expect(screen.getByText('AgentConnect Cover')).toBeInTheDocument();
     expect(screen.getByTestId('main-nav')).toBeInTheDocument();
-    expect(screen.getByText('My policies')).toBeInTheDocument();
+    expect(screen.getByText('My cover')).toBeInTheDocument();
     expect(screen.getByText('Fleet')).toBeInTheDocument();
     expect(screen.getByText('Coverage')).toBeInTheDocument();
     expect(screen.getByText('Claims')).toBeInTheDocument();

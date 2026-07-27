@@ -24,6 +24,11 @@ import {
   enrollmentRatePct,
 } from '../purchase/enroll';
 import { getSelectedAgentIds, setSelectedAgentIds } from './flowState';
+import {
+  CAP_BASE_USD,
+  recommendedCapUsd,
+  stackRows,
+} from './stack';
 
 /** Display letter → engine route. Counterparty cover is not offered; the
  * response cover displays as Coverage E while pricing on the engine's F
@@ -160,6 +165,66 @@ function CoverMapSection({
   );
 }
 
+function joinPlain(items: string[]): string {
+  if (items.length <= 1) return items[0] ?? '';
+  return `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`;
+}
+
+function StackSection({ agent, usdPerN }: { agent: Agent; usdPerN: number }) {
+  const rows = stackRows(agent);
+  const capUsd = recommendedCapUsd(agent);
+  const missing = rows.filter((r) => !r.on);
+  const potentialUsd = capUsd + missing.reduce((a, r) => a + r.addUsd, 0);
+  return (
+    <div data-testid={`stack-${agent.id}`}>
+      <div className="text-2xs font-bold uppercase tracking-wider text-ink">
+        {FLOW_COPY.stackTitle}
+      </div>
+      <ul className="mt-2 flex flex-col gap-1.5">
+        <li className="flex items-baseline justify-between gap-3 text-xs">
+          <span className="text-body">{FLOW_COPY.stackBase}</span>
+          <span className="num flex-none text-ink">{formatUsd(CAP_BASE_USD)}</span>
+        </li>
+        {rows.map((row) => (
+          <li
+            key={row.key}
+            className="flex items-baseline justify-between gap-3 text-xs"
+            data-testid={`stack-${agent.id}-${row.key}`}
+          >
+            <span className="flex items-center gap-2 text-body">
+              <span
+                className={`flex h-3.5 w-3.5 flex-none items-center justify-center rounded-full text-[9px] font-bold ${
+                  row.on ? 'bg-good-bg text-good' : 'bg-bad-bg text-bad'
+                }`}
+              >
+                {row.on ? '✓' : '✕'}
+              </span>
+              {FLOW_COPY.stackLabels[row.key]}
+            </span>
+            <span className="num flex-none text-ink">
+              {row.on ? `+${formatUsd(row.addUsd)}` : '+$0'}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-2 flex items-baseline justify-between border-t border-line-soft pt-2 text-xs">
+        <span className="font-semibold text-ink">{FLOW_COPY.stackCoverAmount}</span>
+        <span className="num font-semibold text-ink">
+          {formatN(usdToN(capUsd, usdPerN), { maxFractionDigits: 0 })} ({formatUsd(capUsd)})
+        </span>
+      </div>
+      <p className="mt-2 text-2xs text-body" data-testid={`stack-note-${agent.id}`}>
+        {missing.length === 0
+          ? FLOW_COPY.stackFull
+          : FLOW_COPY.stackUpsell(
+              joinPlain(missing.map((r) => FLOW_COPY.stackLabels[r.key])),
+              formatUsd(potentialUsd),
+            )}
+      </p>
+    </div>
+  );
+}
+
 function InfoBlock({ title, body }: { title: string; body: string }) {
   return (
     <div>
@@ -207,7 +272,9 @@ export default function FlowQuote() {
 
   if (selected.length === 0) return null;
 
-  const totalCoverUsd = rows.reduce((a, r) => a + capUsdFor(state, r.agent.id), 0);
+  const maxCoverUsd = rows.length
+    ? Math.max(...rows.map((r) => capUsdFor(state, r.agent.id)))
+    : 0;
   const totalPremiumUsd = rows.reduce((a, r) => a + r.enrollment.premiumUsd, 0);
 
   return (
@@ -226,9 +293,11 @@ export default function FlowQuote() {
           <div className="text-2xs font-bold uppercase tracking-widest text-ink">
             {FLOW_COPY.quoteTotalCover}
           </div>
-          <div className="mt-1" data-testid="quote-total-cover">
-            <NearAmount usd={totalCoverUsd} usdPerN={usdPerN} big />
+          <div className="mt-1 flex items-baseline gap-2" data-testid="quote-total-cover">
+            <span className="text-sm font-semibold text-ink">{FLOW_COPY.quoteUpTo}</span>
+            <NearAmount usd={maxCoverUsd} usdPerN={usdPerN} big />
           </div>
+          <p className="mt-2 text-xs text-body">{FLOW_COPY.quoteCoverEachSub}</p>
         </div>
         <div className="rounded-card border border-line bg-panel p-5 shadow-card">
           <div className="text-2xs font-bold uppercase tracking-widest text-ink">
@@ -247,6 +316,7 @@ export default function FlowQuote() {
         <div className="flex items-center gap-x-4 border-b border-line px-4 py-2 text-2xs font-bold uppercase tracking-wider text-ink">
           <span className="w-3 flex-none" />
           <span className="min-w-0 flex-1">{FLOW_COPY.quoteColumns.agent}</span>
+          <span className="w-24 flex-none text-right">{FLOW_COPY.quoteColumns.cover}</span>
           <span className="w-14 flex-none text-right">{FLOW_COPY.quoteColumns.rate}</span>
           <span className="w-28 flex-none text-right">
             {FLOW_COPY.quoteColumns.premium}
@@ -277,6 +347,9 @@ export default function FlowQuote() {
                       </span>
                     )}
                   </span>
+                  <span className="w-24 flex-none" data-testid={`quote-cover-${agent.id}`}>
+                    <NearAmount usd={capUsd} usdPerN={usdPerN} />
+                  </span>
                   <span className="num w-14 flex-none text-right text-xs text-ink">
                     {totalPct}%
                   </span>
@@ -291,6 +364,7 @@ export default function FlowQuote() {
                       {controlsSummary(agent)} · {shortHash(agent.configHash)}
                     </div>
                     <div className="flex flex-col gap-5">
+                      <StackSection agent={agent} usdPerN={usdPerN} />
                       <RateBreakdownSection
                         lines={[...enrollment.rateBreakdown, ...enrollment.loadings]}
                         totalPct={totalPct}

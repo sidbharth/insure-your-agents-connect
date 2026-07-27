@@ -102,17 +102,17 @@ export const COVERAGE_B_GREY_REASON =
 // ---------------------------------------------------------------------------
 
 export const EXCLUSION_WALL_MANTRA =
-  "The policy covers the delegation and the machinery around it, not the model's judgment.";
+  "We cover what your agent is allowed to do and the machinery around it, not the model's judgment.";
 
 export const EXCLUSION_WALL: string[] = [
-  "Losses caused by the model producing an incorrect result. The policy covers the delegation and the systems that enforce it, not the quality of the model's output.",
-  'Losses from market price movements, including stablecoin depegs.',
-  'Failure or forking of the underlying blockchain.',
-  'Compromise of a third-party protocol that the agent used within its mandate.',
-  'A transfer the Principal personally authorized while deceived. This risk belongs to a conventional crime policy.',
-  'Losses incurred while running a configuration that was changed without notice to the programme.',
-  'Losses arising from sanctions, war, or state-sponsored attacks.',
-  "Fraud committed by the Operator's own leadership.",
+  'Losses caused by the model getting something wrong on its own. We cover what your agent is allowed to do and the safety controls around it, not the quality of the model’s thinking.',
+  'Losses from market prices moving, including a stablecoin losing its peg.',
+  'The underlying blockchain failing or forking.',
+  'An outside protocol your agent was allowed to use getting hacked.',
+  'A payment you personally approved while being deceived, which is ordinary fraud against a person rather than an agent failure.',
+  'Losses while the agent runs a setup that was changed without telling the programme.',
+  'Losses arising from sanctions, war, or attacks run by governments.',
+  'Fraud by your own leadership.',
 ];
 
 // ---------------------------------------------------------------------------
@@ -241,7 +241,7 @@ export const EVIDENCE_ITEM_LABELS: Record<number, string> = {
 export const DENIAL_MODEL_CONDUCT = {
   title: 'Determination: not covered (model conduct)',
   body:
-    'We reviewed the attested inputs and outputs for this event. They show no adversarial content, no compromised tool, and no spoofed instruction channel: the agent paid a real, whitelisted payee, within its cap, because the model was simply wrong. The policy covers the delegation and its safety machinery, not the model\'s judgment. Model error, downtime, and training quality are excluded model conduct.',
+    'We reviewed the attested inputs and outputs for this event. They show no adversarial content, no compromised tool, and no spoofed instruction channel: the agent paid a real, whitelisted payee, within its cap, because the model was simply wrong. This cover protects what your agent is allowed to do and the safety machinery around it, not the model\'s judgment. Model error, downtime, and training quality are excluded model conduct.',
   counterfactual:
     'Had the attested inputs shown crafted adversarial content, this would have been Coverage B.',
   clause: 'Model Conduct Boundary',
@@ -593,7 +593,7 @@ export const FLOW_COPY = {
   quoteTitle: 'Your quote',
   quoteSub: 'Every agent gets its own price, based on the safety controls it runs and how much it is allowed to move.',
   quoteHint: 'Select an agent to see how its price is built and what it is covered for.',
-  quoteTotalCover: 'Total cover',
+  quoteTotalCover: 'Cover for each agent',
   quoteAnnualPremium: 'Yearly price',
   quoteAccept: 'Accept quote and continue to terms →',
   quoteBExcluded: 'Coverage B excluded',
@@ -601,10 +601,26 @@ export const FLOW_COPY = {
   totalRate: 'Total rate',
   quoteColumns: {
     agent: 'Agent',
+    cover: 'Cover',
     rate: 'Rate',
     premium: 'Yearly price',
   },
+  quoteUpTo: 'up to',
+  quoteCoverEachSub:
+    'Each agent carries its own separate cover, sized by its stack. A payout for one agent never reduces another agent’s cover.',
   coverMapTitle: 'What this agent is covered for',
+  stackTitle: 'Recommended NEAR stack',
+  stackBase: 'Base cover, every agent starts here',
+  stackLabels: {
+    ironclaw: 'IronClaw harness',
+    nearBank: 'near.com banking',
+    intents: 'NEAR Intents transfers',
+  },
+  stackCoverAmount: 'Cover this agent qualifies for',
+  stackFull:
+    'This agent runs the full recommended NEAR stack, so it qualifies for the highest cover we offer.',
+  stackUpsell: (items: string, amount: string) =>
+    `Add ${items} to raise this agent’s cover to ${amount}.`,
   coverMapExcluded: 'excluded',
   coverMapLimitNote: 'Each figure is the most we pay out for a single incident under that coverage.',
   deductibleTitle: 'Your share of each claim',
@@ -664,7 +680,7 @@ export const FLOW_COPY = {
   termsNotCovered: 'What is not covered',
   termsPayment: 'How payouts work',
   termsLimit: 'The most one incident pays',
-  termsLimitPerAgent: 'for each agent',
+  termsLimitPerAgent: 'for your highest specced agent, each agent has its own amount shown on the quote',
   termsAgree: 'Agree and continue →',
   signTitle: 'Signature',
   signSub: 'One last look, then sign to put your cover in force.',
@@ -677,7 +693,7 @@ export const FLOW_COPY = {
   signSteps: ['Recording signatures…', 'Preparing the payment…'],
   signLabels: {
     agents: 'Agents',
-    cover: 'Total cover',
+    cover: 'Cover for each agent',
     premium: 'Annual premium',
   },
 } as const;

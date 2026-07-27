@@ -80,7 +80,7 @@ function PresenterUrlFlag() {
 }
 
 const NAV_ITEMS: { to: string; label: string }[] = [
-  { to: '/policies', label: 'My policies' },
+  { to: '/policies', label: 'My cover' },
   { to: '/fleet', label: 'Fleet' },
   { to: '/coverage', label: 'Coverage' },
   { to: '/claim', label: 'Claims' },
