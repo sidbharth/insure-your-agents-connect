@@ -114,7 +114,7 @@ export default function FlowTerms() {
                     {agent.name}
                     {excluded && (
                       <span className="font-sans font-semibold">
-                        {FLOW_COPY.coverMapExcluded}, {FLOW_COPY.termsWhoExcludedReason}
+                        {FLOW_COPY.coverMapExcluded} · {FLOW_COPY.termsWhoExcludedReason}
                       </span>
                     )}
                   </span>

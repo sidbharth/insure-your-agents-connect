@@ -489,7 +489,7 @@ export const FLOW_TERMS: FlowTermsPage[] = [
       'Looking into close calls, like a blocked attack or a triggered kill switch.',
     ],
     notCovered: [
-      'Costs beyond this coverage’s limit, noting that recovery and bounty spending has its own smaller cap inside it.',
+      'Costs beyond this coverage’s limit. Recovery and bounty spending has a smaller cap inside it.',
       'Money you did not earn while the agent was down, unless you added that cover separately.',
       'Damage to your reputation and future profits.',
     ],
@@ -612,7 +612,7 @@ export const FLOW_COPY = {
   stackTitle: 'Recommended NEAR stack',
   stackSource:
     'Checked against the agent’s registered harness and the tools it connected with.',
-  stackBase: 'Base cover, every agent starts here',
+  stackBase: 'Base cover',
   stackNotFound: 'not found in this agent’s tools',
   stackLabels: {
     ironclaw: 'IronClaw harness',
@@ -676,14 +676,14 @@ export const FLOW_COPY = {
   termsSub:
     'Let us walk through what your agents are covered for. Your agreement to each part is recorded.',
   termsWhoTitle: 'Who this coverage applies to',
-  termsWhoExcludedReason: 'runs without tamper proof logging',
+  termsWhoExcludedReason: 'no tamper proof logging',
   termsDepletion:
-    'One incident pays up to this amount, and every payout also uses up part of the agent’s yearly cover.',
+    'Each agent’s own amount is shown on the quote. One incident pays up to that amount, and every payout also uses up part of the agent’s yearly cover.',
   termsCovered: 'What is covered',
   termsNotCovered: 'What is not covered',
   termsPayment: 'How payouts work',
   termsLimit: 'The most one incident pays',
-  termsLimitPerAgent: 'for your highest specced agent, each agent has its own amount shown on the quote',
+  termsLimitPerAgent: 'for your highest specced agent',
   termsAgree: 'Agree and continue →',
   signTitle: 'Signature',
   signSub: 'One last look, then sign to put your cover in force.',
