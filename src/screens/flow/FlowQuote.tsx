@@ -18,7 +18,7 @@ import {
   coverageBExcluded,
   enrollmentRatePct,
 } from '../purchase/enroll';
-import { getSelectedAgentIds } from './flowState';
+import { getSelectedAgentIds, setSelectedAgentIds } from './flowState';
 
 function RateBreakdownPanel({
   lines,
@@ -75,6 +75,17 @@ export default function FlowQuote() {
   useEffect(() => {
     if (selected.length === 0) navigate('/', { replace: true });
   }, [selected.length, navigate]);
+
+  // Dropping an agent terminates its unpaid quote and returns the agent to
+  // a clean state; the totals recompute from the remaining rows.
+  const removeAgent = (agentId: string) => {
+    const s = useStore.getState();
+    s.deEnrollAgent(agentId);
+    s.setAgentStatus(agentId, 'Draft');
+    setExpandedAgent(undefined);
+    setSelectedAgentIds(selected.filter((id) => id !== agentId));
+    if (selected.length === 1) navigate('/');
+  };
 
   const rows = selected
     .map((id) => ({
@@ -152,13 +163,25 @@ export default function FlowQuote() {
                   </span>
                 </button>
                 {open && (
-                  <RateBreakdownPanel
-                    lines={[...enrollment.rateBreakdown, ...enrollment.loadings]}
-                    totalPct={totalPct}
-                    capUsd={capUsdFor(state, agent.id)}
-                    premiumUsd={enrollment.premiumUsd}
-                    testId={`quote-breakdown-${agent.id}`}
-                  />
+                  <>
+                    <RateBreakdownPanel
+                      lines={[...enrollment.rateBreakdown, ...enrollment.loadings]}
+                      totalPct={totalPct}
+                      capUsd={capUsdFor(state, agent.id)}
+                      premiumUsd={enrollment.premiumUsd}
+                      testId={`quote-breakdown-${agent.id}`}
+                    />
+                    <div className="flex justify-end border-t border-line-soft bg-canvas px-4 py-2.5">
+                      <button
+                        type="button"
+                        data-testid={`quote-remove-${agent.id}`}
+                        onClick={() => removeAgent(agent.id)}
+                        className="text-2xs font-semibold text-bad"
+                      >
+                        {FLOW_COPY.quoteRemove}
+                      </button>
+                    </div>
+                  </>
                 )}
               </li>
             );

@@ -69,6 +69,20 @@ describe('landing and picker', () => {
     expect(screen.getByTestId('flow-connect')).toBeDisabled();
   });
 
+  it('select all ticks every agent and toggles to clear all', () => {
+    renderAt('/');
+    fireEvent.click(screen.getByTestId('connect-card'));
+    fireEvent.click(screen.getByTestId('flow-select-all'));
+    expect(screen.getByTestId('flow-connect')).toHaveTextContent(
+      FLOW_COPY.modalConnect(CONNECTABLE_AGENT_IDS.length),
+    );
+    expect(screen.getByTestId('flow-select-all')).toHaveTextContent(
+      FLOW_COPY.modalClearAll,
+    );
+    fireEvent.click(screen.getByTestId('flow-select-all'));
+    expect(screen.getByTestId('flow-connect')).toBeDisabled();
+  });
+
   it('connecting prices unpaid enrollments and shows the agent details', async () => {
     await connectAgents(['procurement-bot', 'legacy-bot']);
 
@@ -113,6 +127,28 @@ describe('quote', () => {
     expect(legacy).toHaveTextContent('No TEE attestation');
     expect(legacy).toHaveTextContent(FLOW_COPY.quoteBExcluded);
     expect(legacy).toHaveTextContent('1.2% × $50,000 = $600');
+  });
+
+  it('removing an agent from the expanded row recomputes the quote', async () => {
+    await connectAgents(['procurement-bot', 'legacy-bot']);
+    fireEvent.click(screen.getByTestId('flow-agents-continue'));
+    expect(screen.getByTestId('quote-total-premium')).toHaveTextContent('$900');
+
+    fireEvent.click(screen.getByTestId('quote-row-legacy-bot'));
+    fireEvent.click(screen.getByTestId('quote-remove-legacy-bot'));
+
+    // Row gone, totals recomputed from the remaining agent.
+    expect(screen.queryByTestId('quote-row-legacy-bot')).not.toBeInTheDocument();
+    expect(screen.getByTestId('quote-total-premium')).toHaveTextContent('$300');
+    expect(screen.getByTestId('quote-total-cover')).toHaveTextContent('$50,000');
+
+    // The unpaid quote is terminated and the agent returns to Draft.
+    const state = useStore.getState();
+    const legacyEnrollment = state.enrollments.find((e) => e.agentId === 'legacy-bot');
+    expect(legacyEnrollment?.terminatedAt).toBeDefined();
+    expect(state.agents.find((a) => a.id === 'legacy-bot')?.status).toBe('Draft');
+    // A never activated quote never appears on the policies page.
+    expect(legacyEnrollment?.effectiveAt).toBe(0);
   });
 
   it('the agents carry distinct control profiles that price differently', async () => {
@@ -237,6 +273,8 @@ describe('copy rules', () => {
       FLOW_COPY.modalTitle,
       FLOW_COPY.modalSub,
       FLOW_COPY.modalCancel,
+      FLOW_COPY.modalSelectAll,
+      FLOW_COPY.modalClearAll,
       FLOW_COPY.modalConnect(1),
       FLOW_COPY.modalConnect(3),
       FLOW_COPY.modalConnectNone,
@@ -255,6 +293,7 @@ describe('copy rules', () => {
       FLOW_COPY.quoteAnnualPremium,
       FLOW_COPY.quoteAccept,
       FLOW_COPY.quoteBExcluded,
+      FLOW_COPY.quoteRemove,
       FLOW_COPY.totalRate,
       FLOW_COPY.payTitle,
       FLOW_COPY.paySub,
@@ -283,6 +322,7 @@ describe('copy rules', () => {
       FLOW_COPY.termsNotCovered,
       FLOW_COPY.termsPayment,
       FLOW_COPY.termsLimit,
+      FLOW_COPY.termsLimitPerAgent,
       FLOW_COPY.termsAgree,
       FLOW_COPY.signTitle,
       FLOW_COPY.signSub,

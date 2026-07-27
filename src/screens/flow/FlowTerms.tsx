@@ -126,9 +126,19 @@ export default function FlowTerms() {
               {FLOW_COPY.termsPayment}
             </div>
             <p className="mt-1 text-sm text-body">{terms.payment}</p>
-            <p className="num mt-2 text-sm font-semibold text-ink">
-              {FLOW_COPY.termsLimit}. Up to {formatUsd(limitUsd)} for each agent.
-            </p>
+          </div>
+
+          <div
+            className="mt-4 rounded-lg border border-accent-line bg-accent-soft px-4 py-3"
+            data-testid="terms-limit"
+          >
+            <div className="text-2xs font-bold uppercase tracking-wider text-accent-ink">
+              {FLOW_COPY.termsLimit}
+            </div>
+            <div className="num mt-0.5 text-lg font-bold text-ink">
+              {formatUsd(limitUsd)}
+            </div>
+            <div className="text-2xs text-muted">{FLOW_COPY.termsLimitPerAgent}</div>
           </div>
 
           <label className="mt-5 flex cursor-pointer items-start gap-2.5 rounded-lg border border-line bg-canvas px-3.5 py-3">

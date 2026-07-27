@@ -133,7 +133,25 @@ export default function ConnectLanding() {
               </div>
               <SimulatedBadge />
             </div>
-            <ul className="mt-4 flex flex-col gap-1.5">
+            <div className="mt-3 flex justify-end">
+              <button
+                type="button"
+                data-testid="flow-select-all"
+                onClick={() =>
+                  setTicked(
+                    ticked.size === connectable.length
+                      ? new Set()
+                      : new Set(connectable.map((a) => a.id)),
+                  )
+                }
+                className="text-2xs font-semibold text-accent-ink"
+              >
+                {ticked.size === connectable.length
+                  ? FLOW_COPY.modalClearAll
+                  : FLOW_COPY.modalSelectAll}
+              </button>
+            </div>
+            <ul className="mt-1.5 flex flex-col gap-1.5">
               {connectable.map((agent) => {
                 const on = ticked.has(agent.id);
                 return (

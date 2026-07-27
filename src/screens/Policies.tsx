@@ -99,8 +99,14 @@ export default function Policies() {
   const now = demoNow();
   const verified = isOperatorVerifiedNow(operator.verificationHistory);
 
+  // Only enrollments that were actually activated are policies. Quotes that
+  // were never paid (effectiveAt still 0, e.g. removed on the quote screen)
+  // never appear here.
   const rows = useMemo(
-    () => buildPolicyRows(agents, enrollments, mandates, pendingEdits, now),
+    () =>
+      buildPolicyRows(agents, enrollments, mandates, pendingEdits, now).filter(
+        (r) => r.enrollment.effectiveAt !== 0,
+      ),
     [agents, enrollments, mandates, pendingEdits, now],
   );
   const liveRows = rows.filter((r) => r.enrollment.terminatedAt === undefined);
@@ -569,21 +575,21 @@ function PolicyRowCard({
             {enrollment.effectiveAt !== 0
               ? `Guardrails verified ${fmtDayMonth(enrollment.effectiveAt)}`
               : 'Guardrails verified at activation'}
-            {row.loadingsPct > 0 && (
-              <>
-                {', '}
-                <span className="font-semibold text-warn">
+          </div>
+          {(row.loadingsPct > 0 || agent.controls.tier2.attestation === false) && (
+            <div className="mt-1.5 flex flex-wrap gap-1">
+              {row.loadingsPct > 0 && (
+                <span className="inline-flex rounded border border-warn-line bg-warn-bg px-1.5 py-px text-2xs font-semibold text-warn">
                   +{row.loadingsPct}% loading
                 </span>
-              </>
-            )}
-            {agent.controls.tier2.attestation === false && (
-              <>
-                {', '}
-                <span className="font-semibold text-bad">Coverage B excluded</span>
-              </>
-            )}
-          </div>
+              )}
+              {agent.controls.tier2.attestation === false && (
+                <span className="inline-flex rounded border border-bad-line bg-bad-bg px-1.5 py-px text-2xs font-semibold text-bad">
+                  Coverage B excluded
+                </span>
+              )}
+            </div>
+          )}
         </div>
         <div>
           <div className="text-2xs font-bold uppercase tracking-wider text-faint">Cap</div>
