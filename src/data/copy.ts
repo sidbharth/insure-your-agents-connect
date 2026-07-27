@@ -372,6 +372,154 @@ export const APPEAL_COPY = {
     'The committee acknowledges appeals within 2 business days and replies with a reasoned decision on the same record.',
 } as const;
 
+/**
+ * The six disclosure pages of the connect flow (/flow/terms/1..6). Written
+ * for informed consent. Every page states plainly what the coverage pays,
+ * what it excludes, and how payment is calculated, and carries its own
+ * acknowledgment line. Same punctuation rules as FLOW_COPY.
+ */
+export interface FlowTermsPage {
+  route: CoverageRoute;
+  title: string;
+  intro: string;
+  covered: string[];
+  notCovered: string[];
+  payment: string;
+  acknowledgment: string;
+}
+
+export const FLOW_TERMS: FlowTermsPage[] = [
+  {
+    route: 'A',
+    title: 'Unauthorized agent transaction',
+    intro:
+      'Coverage A responds when your agent moves value outside the mandate you countersigned. It applies whether or not an attacker was involved.',
+    covered: [
+      'Transfers to a payee that is not on the approved whitelist.',
+      'Transfers above the per transaction cap or outside the approved velocity limits.',
+      'Transfers in an asset or on a chain the mandate does not permit.',
+      'Action types never delegated to the agent, such as token approvals, delegations of signing authority, or contract deployments.',
+      'Network fees consumed by the loss and by authorized mitigation, within a small capped allowance.',
+    ],
+    notCovered: [
+      'Transactions that stayed inside the mandate as countersigned, even if the outcome was poor.',
+      'Losses caused by market prices moving, including a stablecoin losing its peg.',
+      'A mandate that was countersigned with the wrong limits. The mandate as signed governs.',
+      'Poor judgment by the model while it stayed inside the mandate.',
+    ],
+    payment:
+      'The policy pays the net asset loss, valued at reference market prices from the window before the event, less any amounts recovered. A deductible applies of the greater of 500 $NEAR or 2% of the loss.',
+    acknowledgment: 'I understand what Coverage A pays and what it excludes.',
+  },
+  {
+    route: 'B',
+    title: 'Agent compromise',
+    intro:
+      'Coverage B responds when an attacker manipulated your agent into moving value while every individual transfer stayed inside the mandate.',
+    covered: [
+      'Prompt injection carried in content the agent read, such as a poisoned product page or attachment.',
+      'Poisoned retrieval data or memory the agent relied on.',
+      'A compromised tool or connector inside the approved toolset.',
+      'A spoofed instruction channel impersonating you.',
+      'A human approval step satisfied by synthetic voice or video.',
+    ],
+    notCovered: [
+      'Losses where the manipulation cannot be shown in the attested records of what the agent saw and did.',
+      'Any loss while the agent runs without attestation. This entire coverage is excluded in that case.',
+      'The model reaching a wrong conclusion from clean inputs. That is model conduct and is never covered.',
+      'Deception aimed directly at a person rather than at the agent.',
+    ],
+    payment:
+      'The policy pays the net asset loss on the same basis as Coverage A, plus incident response costs for the same event. The standard deductible applies.',
+    acknowledgment:
+      'I understand what Coverage B pays, what it excludes, and that it requires attestation.',
+  },
+  {
+    route: 'C',
+    title: 'Key and credential compromise',
+    intro:
+      'Coverage C responds when signing credentials inside your disclosed key setup are stolen or misused and value moves without you or the agent initiating it.',
+    covered: [
+      'Theft or unauthorized use of agent session keys.',
+      'Compromise of key shares held inside the disclosed arrangement.',
+      'Misuse of payment credentials that can move value, including replayed payment authorizations.',
+      'The reasonable cost of key rotation, wallet migration, and fresh attestation after the compromise.',
+    ],
+    notCovered: [
+      'Credentials that were never disclosed in the key map you provided.',
+      'Keys you hold personally outside the agent stack.',
+      'Fraud committed by your own leadership.',
+    ],
+    payment:
+      'The policy pays the net asset loss plus the rotation and migration costs above. Where the misuse was by an insider below leadership you retain 25% of the loss. The standard deductible applies.',
+    acknowledgment:
+      'I understand what Coverage C pays and that only disclosed credentials are covered.',
+  },
+  {
+    route: 'D',
+    title: 'Guardrail failure',
+    intro:
+      'Coverage D responds when a scheduled safety control fails to operate as specified and that failure lets through a loss it should have stopped.',
+    covered: [
+      'A cap check that passed a transfer above the cap. The excess over the cap is covered.',
+      'A timelock that failed to hold a large transfer. The amount that should have been held is covered.',
+      'A kill switch that was activated but did not halt the agent. Losses after activation are covered.',
+      'An anomaly monitor that failed to alert on a pattern it was specified to detect.',
+    ],
+    notCovered: [
+      'Controls that are not on the agreed schedule of guardrails.',
+      'Failures that cannot be verified from the action logs or attestation.',
+      'The model failing to be careful. Judgment is not a guardrail.',
+      'The part of a loss the control could not have prevented even when working correctly.',
+    ],
+    payment:
+      'The policy pays the portion of the loss attributable to the control failure. The deductible is waived when the failed control had passed its latest scheduled verification.',
+    acknowledgment:
+      'I understand Coverage D applies to scheduled controls only, as specified and verifiable from logs.',
+  },
+  {
+    route: 'E',
+    title: 'Counterparty liability',
+    intro:
+      'Coverage E responds when someone on the other side of your agent claims your agent caused them financial loss through a failure this policy covers.',
+    covered: [
+      'Written demands or proceedings first made during the policy period by a merchant, wallet holder, solver, or another agent operator.',
+      'Damages and settlements you become legally obligated to pay.',
+      'The cost of defending those claims.',
+    ],
+    notCovered: [
+      'Contractual penalties above the actual loss suffered.',
+      'Fines and regulatory penalties, except defense costs where the law allows them to be insured.',
+      'Disputes that are purely commercial disagreements about service quality.',
+    ],
+    payment:
+      'Damages, settlements, and defense costs are paid within this coverage’s limit. Defense costs reduce the available limit rather than adding to it.',
+    acknowledgment:
+      'I understand Coverage E, its reduced limit, and that defense costs erode it.',
+  },
+  {
+    route: 'F',
+    title: 'Incident response and recovery',
+    intro:
+      'Coverage F pays the costs of responding to an incident. It also responds to near misses a prudent operator would investigate.',
+    covered: [
+      'Forensic investigation of the agent stack and chain data.',
+      'Tracing and recovery work, including approved bounties and the legal costs of freezing orders.',
+      'Emergency key rotation and redeployment.',
+      'Notification costs where affected parties must be told.',
+      'Investigation of qualifying near misses, such as a triggered kill switch or a blocked injection attempt.',
+    ],
+    notCovered: [
+      'Costs above the limit for this coverage. Recovery and bounty spending carries its own inner cap.',
+      'Lost income while the agent is down, unless business interruption cover was added separately.',
+      'Reputational harm and lost future profits.',
+    ],
+    payment:
+      'Costs are paid as incurred within the limit for this coverage. Recovery and bounty costs within that are further capped.',
+    acknowledgment: 'I understand Coverage F, its limits, and the response costs it pays.',
+  },
+];
+
 export interface ClaimDemoScenarioCopy {
   scenarioId: ScenarioId;
   title: string;
@@ -476,15 +624,18 @@ export const FLOW_COPY = {
   payStakeBody: 'The premium is funded from staking rewards over the policy year.',
   payChoose: 'Choose →',
   termsProgress: (n: number) => `Part ${n} of 6`,
-  termsSub: 'Review and agree to each coverage before signing.',
-  termsWhatItPays: 'What it pays',
-  termsKeyCondition: 'Key condition',
+  termsSub: 'Read each coverage in full. Your agreement to each part is recorded.',
+  termsCovered: 'What is covered',
+  termsNotCovered: 'What is not covered',
+  termsPayment: 'How payment works',
   termsLimit: 'Limit for each event',
   termsAgree: 'Agree and continue →',
   signTitle: 'Signature',
   signSub: 'Review the terms of cover and sign to bind them.',
+  signExclusions: 'Excluded across every coverage',
+  signAck: 'I have reviewed each coverage, the exclusions above, and the annual premium.',
   signStatement:
-    'By signing you agree to Coverages A through F as presented. Cover starts the moment you sign.',
+    'By signing you agree to Coverages A through F as presented and acknowledged, part by part. Cover starts the moment you sign.',
   signButton: 'Sign and start cover',
   signTheaterTitle: 'Binding cover',
   signSteps: [

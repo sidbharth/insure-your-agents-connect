@@ -15,7 +15,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { AppShell } from '../../App';
-import { FLOW_COPY } from '../../data/copy';
+import { FLOW_COPY, FLOW_TERMS } from '../../data/copy';
 import { setLatencyTestMode } from '../../lib/latency';
 import { useStore } from '../../store';
 import { setPriceFetchFn } from '../../store/priceFeed';
@@ -113,6 +113,9 @@ describe('payment, disclosures, and signing', () => {
       await waitFor(() =>
         expect(screen.getByTestId(`terms-page-${route}`)).toBeInTheDocument(),
       );
+      // Agreement is gated on the per-page acknowledgment.
+      expect(screen.getByTestId('terms-agree')).toBeDisabled();
+      fireEvent.click(screen.getByTestId('terms-acknowledge'));
       fireEvent.click(screen.getByTestId('terms-agree'));
     }
 
@@ -122,7 +125,11 @@ describe('payment, disclosures, and signing', () => {
     expect(screen.getByTestId('sign-statement')).toHaveTextContent(
       FLOW_COPY.signStatement,
     );
+    expect(screen.getByTestId('sign-exclusions')).toBeInTheDocument();
 
+    // Signing is gated on the final acknowledgment.
+    expect(screen.getByTestId('flow-sign')).toBeDisabled();
+    fireEvent.click(screen.getByTestId('sign-acknowledge'));
     fireEvent.click(screen.getByTestId('flow-sign'));
     await waitFor(() =>
       expect(screen.getByTestId('screen-Policies')).toBeInTheDocument(),
@@ -193,14 +200,25 @@ describe('copy rules', () => {
       FLOW_COPY.payChoose,
       FLOW_COPY.termsProgress(3),
       FLOW_COPY.termsSub,
-      FLOW_COPY.termsWhatItPays,
-      FLOW_COPY.termsKeyCondition,
+      FLOW_COPY.termsCovered,
+      FLOW_COPY.termsNotCovered,
+      FLOW_COPY.termsPayment,
       FLOW_COPY.termsLimit,
       FLOW_COPY.termsAgree,
       FLOW_COPY.signTitle,
       FLOW_COPY.signSub,
+      FLOW_COPY.signExclusions,
+      FLOW_COPY.signAck,
       FLOW_COPY.signStatement,
       FLOW_COPY.signButton,
+      ...FLOW_TERMS.flatMap((t) => [
+        t.title,
+        t.intro,
+        ...t.covered,
+        ...t.notCovered,
+        t.payment,
+        t.acknowledgment,
+      ]),
       FLOW_COPY.signTheaterTitle,
       ...FLOW_COPY.signSteps,
       ...Object.values(FLOW_COPY.signLabels),

@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LatencyTheater } from '../../components/LatencyTheater';
 import { SimulatedBadge } from '../../components/SimulatedBadge';
-import { FLOW_COPY } from '../../data/copy';
+import { EXCLUSION_WALL, FLOW_COPY } from '../../data/copy';
 import { formatUsd } from '../../lib/money';
 import { executePayment, PaymentAbortedError } from '../../lib/payments';
 import { useStore } from '../../store';
@@ -25,6 +25,7 @@ export default function FlowSign() {
   const state = useStore((s) => s);
   const navigate = useNavigate();
   const [signing, setSigning] = useState(false);
+  const [acknowledged, setAcknowledged] = useState(false);
   const selected = getSelectedAgentIds();
   const method = getPaymentMethod() ?? 'upfront';
 
@@ -87,6 +88,33 @@ export default function FlowSign() {
             />
           </div>
 
+          <div className="mt-4 border-t border-line pt-4">
+            <div className="text-2xs font-bold uppercase tracking-wider text-bad">
+              {FLOW_COPY.signExclusions}
+            </div>
+            <ul className="mt-2 flex flex-col gap-2" data-testid="sign-exclusions">
+              {EXCLUSION_WALL.map((item) => (
+                <li key={item} className="flex items-start gap-2.5 text-xs text-body">
+                  <span className="mt-0.5 flex h-3.5 w-3.5 flex-none items-center justify-center rounded-full bg-bad-bg text-[9px] font-bold text-bad">
+                    ✕
+                  </span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <label className="mt-4 flex cursor-pointer items-start gap-2.5 rounded-lg border border-line bg-canvas px-3.5 py-3">
+            <input
+              type="checkbox"
+              data-testid="sign-acknowledge"
+              checked={acknowledged}
+              onChange={(e) => setAcknowledged(e.target.checked)}
+              className="mt-0.5 h-4 w-4 flex-none accent-[#00c988]"
+            />
+            <span className="text-sm font-semibold text-ink">{FLOW_COPY.signAck}</span>
+          </label>
+
           <p
             className="mt-4 border-t border-line pt-4 text-sm text-body"
             data-testid="sign-statement"
@@ -110,8 +138,9 @@ export default function FlowSign() {
               <button
                 type="button"
                 data-testid="flow-sign"
+                disabled={!acknowledged}
                 onClick={() => setSigning(true)}
-                className="rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-ink"
+                className="rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-ink disabled:opacity-40"
               >
                 {FLOW_COPY.signButton}
               </button>

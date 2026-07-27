@@ -1,12 +1,13 @@
 /**
  * Connect flow, step 5 — coverage disclosures (route /flow/terms/:page).
- * One page per coverage, A through F. Each page states what the coverage
- * pays, its key condition, and the limit for each event, and must be agreed
- * to before the next page unlocks. Signing happens after page 6.
+ * One page per coverage, A through F, written for informed consent: what is
+ * covered, what is not covered, and how payment works, with a per-page
+ * acknowledgment checkbox gating the agreement. Signing happens after
+ * page 6.
  */
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { COVERAGE_CARDS, FLOW_COPY } from '../../data/copy';
+import { FLOW_COPY, FLOW_TERMS } from '../../data/copy';
 import { perEventLimit } from '../../lib/claims';
 import { formatUsd } from '../../lib/money';
 import { SEED_CAP_USD } from '../../data/seed';
@@ -21,11 +22,17 @@ export default function FlowTerms() {
   const state = useStore((s) => s);
   const navigate = useNavigate();
   const selected = getSelectedAgentIds();
+  const [acknowledged, setAcknowledged] = useState(false);
 
   const page = Number(pageParam);
   const validPage = Number.isInteger(page) && page >= 1 && page <= PAGE_COUNT;
   // Pages unlock in order; deep links past the agreed point snap back.
   const maxAllowed = Math.min(getAgreedPages() + 1, PAGE_COUNT);
+
+  // Each page requires its own affirmative acknowledgment.
+  useEffect(() => {
+    setAcknowledged(false);
+  }, [page]);
 
   useEffect(() => {
     if (selected.length === 0) {
@@ -38,16 +45,17 @@ export default function FlowTerms() {
   }, [selected.length, validPage, page, maxAllowed, navigate]);
   if (selected.length === 0 || !validPage || page > maxAllowed) return null;
 
-  const card = COVERAGE_CARDS[page - 1];
+  const terms = FLOW_TERMS[page - 1];
   // All flow agents carry the same default cap today; the limit line shows
   // the per-agent figure at the largest cap among the connected agents.
   const capUsd = Math.max(
     SEED_CAP_USD,
     ...selected.map((id) => capUsdFor(state, id)),
   );
-  const limitUsd = perEventLimit(card.route, capUsd);
+  const limitUsd = perEventLimit(terms.route, capUsd);
 
   const agree = () => {
+    if (!acknowledged) return;
     markPageAgreed(page);
     if (page < PAGE_COUNT) navigate(`/flow/terms/${page + 1}`);
     else navigate('/flow/sign');
@@ -60,7 +68,7 @@ export default function FlowTerms() {
           {FLOW_COPY.termsProgress(page)}
         </div>
         <h1 className="mt-1 text-lg font-bold tracking-tight text-ink">
-          Coverage {card.route}. {card.title}
+          Coverage {terms.route}. {terms.title}
         </h1>
         <p className="mt-1 text-sm text-muted">{FLOW_COPY.termsSub}</p>
 
@@ -77,34 +85,64 @@ export default function FlowTerms() {
 
         <div
           className="mt-4 rounded-card border border-line bg-panel p-5 shadow-card"
-          data-testid={`terms-page-${card.route}`}
+          data-testid={`terms-page-${terms.route}`}
         >
-          <p className="text-sm text-body">{card.oneLiner}</p>
+          <p className="text-sm text-body">{terms.intro}</p>
 
-          <div className="mt-4">
-            <div className="text-2xs font-bold uppercase tracking-wider text-faint">
-              {FLOW_COPY.termsWhatItPays}
+          <div className="mt-5">
+            <div className="text-2xs font-bold uppercase tracking-wider text-good">
+              {FLOW_COPY.termsCovered}
             </div>
-            <p className="mt-1 text-sm text-body">{card.whatItPays}</p>
+            <ul className="mt-2 flex flex-col gap-2">
+              {terms.covered.map((item) => (
+                <li key={item} className="flex items-start gap-2.5 text-sm text-body">
+                  <span className="mt-0.5 flex h-3.5 w-3.5 flex-none items-center justify-center rounded-full bg-good-bg text-[9px] font-bold text-good">
+                    ✓
+                  </span>
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
 
-          <div className="mt-4">
-            <div className="text-2xs font-bold uppercase tracking-wider text-faint">
-              {FLOW_COPY.termsKeyCondition}
+          <div className="mt-5">
+            <div className="text-2xs font-bold uppercase tracking-wider text-bad">
+              {FLOW_COPY.termsNotCovered}
             </div>
-            <p className="mt-1 text-sm text-body">{card.keyCondition}</p>
+            <ul className="mt-2 flex flex-col gap-2" data-testid="terms-not-covered">
+              {terms.notCovered.map((item) => (
+                <li key={item} className="flex items-start gap-2.5 text-sm text-body">
+                  <span className="mt-0.5 flex h-3.5 w-3.5 flex-none items-center justify-center rounded-full bg-bad-bg text-[9px] font-bold text-bad">
+                    ✕
+                  </span>
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
 
-          <div className="mt-4">
+          <div className="mt-5">
             <div className="text-2xs font-bold uppercase tracking-wider text-faint">
-              {FLOW_COPY.termsLimit}
+              {FLOW_COPY.termsPayment}
             </div>
-            <p className="num mt-1 text-sm font-semibold text-ink">
-              up to {formatUsd(limitUsd)} for each agent
+            <p className="mt-1 text-sm text-body">{terms.payment}</p>
+            <p className="num mt-2 text-sm font-semibold text-ink">
+              {FLOW_COPY.termsLimit}. Up to {formatUsd(limitUsd)} for each agent.
             </p>
           </div>
 
-          <div className="mt-5 flex items-center justify-between gap-3 border-t border-line pt-4">
+          <label className="mt-5 flex cursor-pointer items-start gap-2.5 rounded-lg border border-line bg-canvas px-3.5 py-3">
+            <input
+              type="checkbox"
+              data-testid="terms-acknowledge"
+              checked={acknowledged}
+              onChange={(e) => setAcknowledged(e.target.checked)}
+              className="mt-0.5 h-4 w-4 flex-none accent-[#00c988]"
+            />
+            <span className="text-sm font-semibold text-ink">{terms.acknowledgment}</span>
+          </label>
+
+          <div className="mt-4 flex items-center justify-between gap-3 border-t border-line pt-4">
             <button
               type="button"
               data-testid="terms-back"
@@ -116,8 +154,9 @@ export default function FlowTerms() {
             <button
               type="button"
               data-testid="terms-agree"
+              disabled={!acknowledged}
               onClick={agree}
-              className="rounded-lg bg-accent px-3.5 py-2 text-sm font-semibold text-ink"
+              className="rounded-lg bg-accent px-3.5 py-2 text-sm font-semibold text-ink disabled:opacity-40"
             >
               {FLOW_COPY.termsAgree}
             </button>
