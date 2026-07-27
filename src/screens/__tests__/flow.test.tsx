@@ -194,12 +194,25 @@ describe('quote', () => {
     expect(screen.getByTestId('stack-note-procurement-bot')).toHaveTextContent(
       FLOW_COPY.stackFull,
     );
+    expect(screen.getByTestId('stack-procurement-bot-nearBank')).toHaveTextContent(
+      'nearcom.treasury',
+    );
+    expect(screen.getByTestId('stack-procurement-bot-intents')).toHaveTextContent(
+      'intents.transfer',
+    );
+    fireEvent.click(screen.getByTestId('quote-row-procurement-bot'));
 
     // legacy runs none of it: base cover only, with the upsell naming all
     // three products and the $50,000 it could reach.
     fireEvent.click(screen.getByTestId('quote-row-legacy-bot'));
     const note = screen.getByTestId('stack-note-legacy-bot');
     expect(note).toHaveTextContent('IronClaw harness');
+    // Detection is read from the manifest and the registered harness, and
+    // the rows show what was actually found.
+    expect(screen.getByTestId('stack-legacy-bot-ironclaw')).toHaveTextContent('Hermes v1');
+    expect(screen.getByTestId('stack-legacy-bot-nearBank')).toHaveTextContent(
+      FLOW_COPY.stackNotFound,
+    );
     expect(note).toHaveTextContent('near.com banking');
     expect(note).toHaveTextContent('NEAR Intents transfers');
     expect(note).toHaveTextContent('$50,000');
@@ -357,7 +370,9 @@ describe('copy rules', () => {
       FLOW_COPY.quoteUpTo,
       FLOW_COPY.quoteCoverEachSub,
       FLOW_COPY.stackTitle,
+      FLOW_COPY.stackSource,
       FLOW_COPY.stackBase,
+      FLOW_COPY.stackNotFound,
       ...Object.values(FLOW_COPY.stackLabels),
       FLOW_COPY.stackCoverAmount,
       FLOW_COPY.stackFull,

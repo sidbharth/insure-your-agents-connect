@@ -180,6 +180,7 @@ function StackSection({ agent, usdPerN }: { agent: Agent; usdPerN: number }) {
       <div className="text-2xs font-bold uppercase tracking-wider text-ink">
         {FLOW_COPY.stackTitle}
       </div>
+      <p className="mt-1 text-2xs text-body">{FLOW_COPY.stackSource}</p>
       <ul className="mt-2 flex flex-col gap-1.5">
         <li className="flex items-baseline justify-between gap-3 text-xs">
           <span className="text-body">{FLOW_COPY.stackBase}</span>
@@ -191,7 +192,7 @@ function StackSection({ agent, usdPerN }: { agent: Agent; usdPerN: number }) {
             className="flex items-baseline justify-between gap-3 text-xs"
             data-testid={`stack-${agent.id}-${row.key}`}
           >
-            <span className="flex items-center gap-2 text-body">
+            <span className="flex min-w-0 items-center gap-2 text-body">
               <span
                 className={`flex h-3.5 w-3.5 flex-none items-center justify-center rounded-full text-[9px] font-bold ${
                   row.on ? 'bg-good-bg text-good' : 'bg-bad-bg text-bad'
@@ -200,6 +201,9 @@ function StackSection({ agent, usdPerN }: { agent: Agent; usdPerN: number }) {
                 {row.on ? '✓' : '✕'}
               </span>
               {FLOW_COPY.stackLabels[row.key]}
+              <span className="num truncate font-mono text-2xs text-body">
+                {row.evidence ?? FLOW_COPY.stackNotFound}
+              </span>
             </span>
             <span className="num flex-none text-ink">
               {row.on ? `+${formatUsd(row.addUsd)}` : '+$0'}

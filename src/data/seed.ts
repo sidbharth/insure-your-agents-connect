@@ -137,6 +137,12 @@ const HARNESSES: Record<string, Harness> = {
   [BEACON]: { name: 'Eliza', version: 'v4', audited: true },
 };
 
+/** NEAR stack connectors, added to an agent's manifest per its seed spec. */
+const STACK_TOOLS: Record<'nearcom' | 'intents', ToolManifestEntry> = {
+  nearcom: { name: 'nearcom.treasury', publisher: 'near.com', version: '2.3.1', permissions: ['banking:accounts'] },
+  intents: { name: 'intents.transfer', publisher: 'NEAR Intents', version: '1.4.0', permissions: ['transfer:route'] },
+};
+
 const BASE_MANIFEST: ToolManifestEntry[] = [
   { name: 'payments.send', publisher: 'NEAR AI', version: '3.1.0', permissions: ['transfer:whitelisted'] },
   { name: 'invoices.read', publisher: 'Ledgerworks', version: '2.4.2', permissions: ['read:invoices'] },
@@ -148,6 +154,8 @@ export interface SeedAgentSpec {
   id: string;
   name: string;
   harnessKey: string;
+  /** NEAR stack connectors present in this agent's tool manifest. */
+  stackTools?: readonly ('nearcom' | 'intents')[];
   /** Legacy-Bot has no attestation available (REQ-7.3.3). */
   attestationAvailable: boolean;
   /** Rate at enrollment per Appendix B (points, before any live re-derivation). */
@@ -163,6 +171,7 @@ export const WIZARD_AGENT: SeedAgentSpec = {
   id: 'procurement-bot',
   name: 'procurement.sidb.near',
   harnessKey: HELIOS,
+  stackTools: ['nearcom', 'intents'],
   attestationAvailable: true,
   seedRatePct: 0.6,
   concentrationTag: false,
@@ -178,9 +187,9 @@ export const WIZARD_AGENT: SeedAgentSpec = {
 export const FLEET_IMPORT_ORDER: SeedAgentSpec[] = [
   { id: 'legacy-bot', name: 'legacy.sidb.near', harnessKey: ATLAS, attestationAvailable: false, seedRatePct: 1.2, concentrationTag: false, coverageBExcluded: true },
   { id: 'relay-bot', name: 'Relay-Bot', harnessKey: BEACON, attestationAvailable: true, seedRatePct: 0.6, concentrationTag: false, coverageBExcluded: false },
-  { id: 'payables-bot', name: 'payables.sidb.near', harnessKey: HELIOS, attestationAvailable: true, seedRatePct: 0.6, concentrationTag: false, coverageBExcluded: false },
+  { id: 'payables-bot', name: 'payables.sidb.near', harnessKey: HELIOS, stackTools: ['nearcom'], attestationAvailable: true, seedRatePct: 0.6, concentrationTag: false, coverageBExcluded: false },
   { id: 'refunds-bot', name: 'refunds.sidb.near', harnessKey: HELIOS, attestationAvailable: true, seedRatePct: 0.6, concentrationTag: false, coverageBExcluded: false },
-  { id: 'treasury-bot', name: 'treasury.sidb.near', harnessKey: HELIOS, attestationAvailable: true, seedRatePct: 0.6, concentrationTag: false, coverageBExcluded: false },
+  { id: 'treasury-bot', name: 'treasury.sidb.near', harnessKey: HELIOS, stackTools: ['intents'], attestationAvailable: true, seedRatePct: 0.6, concentrationTag: false, coverageBExcluded: false },
   { id: 'vendor-bot', name: 'Vendor-Bot', harnessKey: HELIOS, attestationAvailable: true, seedRatePct: 0.6, concentrationTag: false, coverageBExcluded: false },
   { id: 'settle-bot', name: 'Settle-Bot', harnessKey: HELIOS, attestationAvailable: true, seedRatePct: 0.7, concentrationTag: true, coverageBExcluded: false },
   { id: 'invoice-bot', name: 'Invoice-Bot', harnessKey: HELIOS, attestationAvailable: true, seedRatePct: 0.7, concentrationTag: true, coverageBExcluded: false },
@@ -204,7 +213,10 @@ function buildAgent(spec: SeedAgentSpec): Agent {
     configHash: configHash(`${spec.name}|${spec.harnessKey}|manifest-v1`),
     harness,
     modelEndpointId: `model-endpoint/${spec.id}`,
-    toolManifest: BASE_MANIFEST,
+    toolManifest: [
+      ...BASE_MANIFEST,
+      ...(spec.stackTools ?? []).map((key) => STACK_TOOLS[key]),
+    ],
     attestation: spec.attestationAvailable
       ? { available: true, endpoint: `https://attest.demo/${spec.id}` }
       : { available: false },

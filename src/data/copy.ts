@@ -610,7 +610,10 @@ export const FLOW_COPY = {
     'Each agent carries its own separate cover, sized by its stack. A payout for one agent never reduces another agent’s cover.',
   coverMapTitle: 'What this agent is covered for',
   stackTitle: 'Recommended NEAR stack',
+  stackSource:
+    'Checked against the agent’s registered harness and the tools it connected with.',
   stackBase: 'Base cover, every agent starts here',
+  stackNotFound: 'not found in this agent’s tools',
   stackLabels: {
     ironclaw: 'IronClaw harness',
     nearBank: 'near.com banking',
