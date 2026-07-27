@@ -15,7 +15,7 @@ import { useStore } from '../../store';
 import { capUsdFor } from '../purchase/enroll';
 import { getAgreedPages, getSelectedAgentIds, markPageAgreed } from './flowState';
 
-const PAGE_COUNT = 6;
+const PAGE_COUNT = 5;
 
 export default function FlowTerms() {
   const { page: pageParam } = useParams();
@@ -70,7 +70,7 @@ export default function FlowTerms() {
           {FLOW_COPY.termsProgress(page)}
         </div>
         <h1 className="mt-1 text-lg font-bold tracking-tight text-ink">
-          Coverage {terms.route}. {terms.title}
+          Coverage {terms.letter}. {terms.title}
         </h1>
         <p className="mt-1 text-sm text-muted">{FLOW_COPY.termsSub}</p>
 
@@ -87,7 +87,7 @@ export default function FlowTerms() {
 
         <div
           className="mt-4 rounded-card border border-line bg-panel p-5 shadow-card"
-          data-testid={`terms-page-${terms.route}`}
+          data-testid={`terms-page-${terms.letter}`}
         >
           <div
             className="mb-4 rounded-lg border border-line bg-canvas px-4 py-3"

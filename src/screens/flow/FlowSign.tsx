@@ -23,12 +23,12 @@ export default function FlowSign() {
   const [acknowledged, setAcknowledged] = useState(false);
   const selected = getSelectedAgentIds();
 
-  // The signature page is reachable only after all six coverages are agreed.
+  // The signature page is reachable only after all five coverages are agreed.
   useEffect(() => {
     if (selected.length === 0) navigate('/', { replace: true });
-    else if (getAgreedPages() < 6) navigate(`/flow/terms/${getAgreedPages() + 1}`, { replace: true });
+    else if (getAgreedPages() < 5) navigate(`/flow/terms/${getAgreedPages() + 1}`, { replace: true });
   }, [selected.length, navigate]);
-  if (selected.length === 0 || getAgreedPages() < 6) return null;
+  if (selected.length === 0 || getAgreedPages() < 5) return null;
 
   const live = enrollments.filter(
     (e) => selected.includes(e.agentId) && e.terminatedAt === undefined,

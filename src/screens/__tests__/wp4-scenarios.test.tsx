@@ -165,7 +165,7 @@ describe('7.10 Scenario Explorer', () => {
 });
 
 describe('7.10 coverage detail', () => {
-  it('pre-purchase shows quote-stage numbers and the six cards', () => {
+  it('pre-purchase shows quote-stage numbers and the five cards', () => {
     renderAt('/coverage');
     expect(screen.getByTestId('screen-Coverage')).toBeInTheDocument();
     expect(screen.getByTestId('coverage-quote-stage')).toBeInTheDocument();
@@ -180,8 +180,8 @@ describe('7.10 coverage detail', () => {
 
     const sublimits = screen.getByTestId('coverage-sublimits');
     expect(within(sublimits).getByTestId('sublimit-A').textContent).toMatch(/\$50,000/);
-    expect(within(sublimits).getByTestId('sublimit-E').textContent).toMatch(/\$25,000/);
-    expect(within(sublimits).getByTestId('sublimit-F').textContent).toMatch(/\$7,500/);
+    expect(within(sublimits).getByTestId('sublimit-E').textContent).toMatch(/\$7,500/);
+    expect(within(sublimits).queryByTestId('sublimit-F')).toBeNull();
   });
 
   it('Coverage B greys with the reason when attestation is not operative', () => {

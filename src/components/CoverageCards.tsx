@@ -33,8 +33,8 @@ export function CoverageCards({ states, compact = false, className = '' }: Cover
           const state = byRoute.get(card.route) ?? { route: card.route, active: true };
           return (
             <div
-              key={card.route}
-              data-testid={`coverage-card-${card.route}`}
+              key={card.letter ?? card.route}
+              data-testid={`coverage-card-${card.letter ?? card.route}`}
               data-active={state.active}
               title={state.active ? card.oneLiner : state.greyReason}
               className={`rounded-card border shadow-card transition-opacity ${
@@ -49,7 +49,7 @@ export function CoverageCards({ states, compact = false, className = '' }: Cover
                     state.active ? 'bg-accent-soft text-accent-ink' : 'bg-line-soft text-faint'
                   }`}
                 >
-                  {card.route}
+                  {card.letter ?? card.route}
                 </span>
                 <span
                   className={`min-w-0 break-words text-2xs font-semibold leading-snug ${state.active ? 'text-ink' : 'text-faint'}`}

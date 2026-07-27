@@ -27,7 +27,15 @@ import type { CoverageRoute } from '../store/types';
 import { fmtDate, newestMandate } from './portfolio/helpers';
 import ScenarioExplorer from './ScenarioExplorer';
 
-const ROUTES: CoverageRoute[] = ['A', 'B', 'C', 'D', 'E', 'F'];
+/** Display rows. Counterparty cover is not offered; response cover shows
+ * as Coverage E while keeping the engine's F limits. */
+const DISPLAY_ROWS: { letter: string; route: CoverageRoute }[] = [
+  { letter: 'A', route: 'A' },
+  { letter: 'B', route: 'B' },
+  { letter: 'C', route: 'C' },
+  { letter: 'D', route: 'D' },
+  { letter: 'E', route: 'F' },
+];
 
 const LIMIT_LABEL: Record<CoverageRoute, string> = {
   A: '100% of cap',
@@ -69,7 +77,7 @@ export default function Coverage() {
 
   const cardStates: CoverageCardState[] = useMemo(
     () =>
-      ROUTES.map((route) => ({
+      DISPLAY_ROWS.map(({ route }) => ({
         route,
         active: route !== 'B' || attestationOperative,
         greyReason: route === 'B' && !attestationOperative ? COVERAGE_B_GREY_REASON : undefined,
@@ -93,7 +101,7 @@ export default function Coverage() {
             )}
           </h1>
           <p className="mt-1 max-w-xl text-sm text-muted">
-            Six coverages, A through F, apply to{' '}
+            Five coverages, A through E, apply to{' '}
             {postPurchase ? 'this agent’s' : 'the quoted'}{' '}
             <b className="num text-ink">{formatUsd(capUsd)}</b> cap. Active
             coverages follow from the controls in place.
@@ -134,15 +142,14 @@ export default function Coverage() {
           Per-event limits
         </div>
         <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-3">
-          {(['A', 'E', 'F'] as CoverageRoute[]).map((route) => (
+          {([['A', 'A\u2013D per event'], ['F', 'E per event']] as [CoverageRoute, string][]).map(([route, rowLabel]) => (
             <div key={route} className="text-sm text-body">
               <span className="text-muted">
-                {route === 'A' ? 'A–D per event' : `${route} per event`}{' '}
-                ({LIMIT_LABEL[route]})
+                {rowLabel} ({LIMIT_LABEL[route]})
               </span>{' '}
               <MathValue
                 breakdown={{
-                  title: `Per-event limit, route ${route === 'A' ? 'A–D' : route}`,
+                  title: `Per-event limit, ${rowLabel}`,
                   inputs: [
                     { label: 'Per-agent cap', amount: formatUsd(capUsd) },
                     { label: 'Limit fraction', amount: LIMIT_LABEL[route] },
@@ -177,17 +184,17 @@ export default function Coverage() {
           Per-event limits at {postPurchase ? 'this policy’s' : 'the quoted'} cap
         </div>
         <ul className="mt-1 divide-y divide-line-soft">
-          {ROUTES.map((route) => {
+          {DISPLAY_ROWS.map(({ letter, route }) => {
             const card = COVERAGE_CARDS.find((c) => c.route === route);
             const limit = perEventLimit(route, capUsd);
             return (
               <li
-                key={route}
-                data-testid={`sublimit-${route}`}
+                key={letter}
+                data-testid={`sublimit-${letter}`}
                 className="flex items-center justify-between gap-4 py-1.5 text-sm"
               >
                 <span className="text-muted">
-                  <b className="text-ink">Coverage {route}</b>: {card?.title}
+                  <b className="text-ink">Coverage {letter}</b>: {card?.title}
                 </span>
                 <MathValue
                   breakdown={{

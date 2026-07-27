@@ -25,7 +25,16 @@ import {
 } from '../purchase/enroll';
 import { getSelectedAgentIds, setSelectedAgentIds } from './flowState';
 
-const ROUTES: CoverageRoute[] = ['A', 'B', 'C', 'D', 'E', 'F'];
+/** Display letter → engine route. Counterparty cover is not offered; the
+ * response cover displays as Coverage E while pricing on the engine's F
+ * limits. */
+const COVER_MAP_ROWS: { letter: string; route: CoverageRoute }[] = [
+  { letter: 'A', route: 'A' },
+  { letter: 'B', route: 'B' },
+  { letter: 'C', route: 'C' },
+  { letter: 'D', route: 'D' },
+  { letter: 'E', route: 'F' },
+];
 
 /** Primary $NEAR figure with the USD anchor underneath. */
 function NearAmount({
@@ -117,18 +126,18 @@ function CoverMapSection({
         {FLOW_COPY.coverMapTitle}
       </div>
       <ul className="mt-2 flex flex-col gap-1.5">
-        {ROUTES.map((route) => {
+        {COVER_MAP_ROWS.map(({ letter, route }) => {
           const card = COVERAGE_CARDS.find((c) => c.route === route);
           const excluded = route === 'B' && !agent.controls.tier2.attestation;
           const limitUsd = perEventLimit(route, capUsd);
           return (
             <li
-              key={route}
+              key={letter}
               className="flex items-baseline justify-between gap-3 text-xs"
-              data-testid={`cover-map-${agent.id}-${route}`}
+              data-testid={`cover-map-${agent.id}-${letter}`}
             >
               <span className={`min-w-0 ${excluded ? 'text-body line-through' : 'text-body'}`}>
-                <b className="text-ink no-underline">Coverage {route}.</b> {card?.title}
+                <b className="text-ink no-underline">Coverage {letter}.</b> {card?.title}
               </span>
               {excluded ? (
                 <span className="inline-flex flex-none rounded border border-bad-line bg-bad-bg px-1.5 py-px text-2xs font-semibold text-bad">

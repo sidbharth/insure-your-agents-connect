@@ -67,9 +67,9 @@ describe('7.6 — the price', () => {
 });
 
 describe('7.6 — coverage cards (REQ-7.6.1)', () => {
-  it('all six cards are active for the fully compliant agent', () => {
+  it('all five cards are active for the fully compliant agent', () => {
     renderQuote();
-    for (const route of ['A', 'B', 'C', 'D', 'E', 'F']) {
+    for (const route of ['A', 'B', 'C', 'D', 'E']) {
       expect(screen.getByTestId(`coverage-card-${route}`)).toHaveAttribute(
         'data-active',
         'true',

@@ -186,9 +186,9 @@ describe('quote', () => {
 /** Quote accept → disclosures A to F → signature → payment page. */
 async function agreeAndSign() {
   fireEvent.click(screen.getByTestId('flow-quote-accept'));
-  for (const route of ['A', 'B', 'C', 'D', 'E', 'F']) {
+  for (const letter of ['A', 'B', 'C', 'D', 'E']) {
     await waitFor(() =>
-      expect(screen.getByTestId(`terms-page-${route}`)).toBeInTheDocument(),
+      expect(screen.getByTestId(`terms-page-${letter}`)).toBeInTheDocument(),
     );
     // Agreement is gated on the per-page acknowledgment.
     expect(screen.getByTestId('terms-agree')).toBeDisabled();
