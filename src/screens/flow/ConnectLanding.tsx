@@ -81,13 +81,8 @@ export default function ConnectLanding() {
             onClick={() => setPhase('picking')}
             className="mt-8 flex w-full items-center justify-between gap-3 rounded-card border border-line bg-panel px-5 py-4 text-left shadow-card"
           >
-            <span>
-              <span className="block text-sm font-semibold text-ink">
-                {FLOW_COPY.connectCard}
-              </span>
-              <span className="mt-0.5 block text-xs text-muted">
-                {FLOW_COPY.landingHeading}
-              </span>
+            <span className="text-sm font-semibold text-ink">
+              {FLOW_COPY.connectCard}
             </span>
             <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-accent text-sm font-bold text-ink">
               →

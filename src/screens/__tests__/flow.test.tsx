@@ -168,7 +168,6 @@ describe('copy rules', () => {
   it('flow copy contains no colons, semicolons, or dashes', () => {
     const forbidden = /[:;‐‑‒–—-]/;
     const strings: string[] = [
-      FLOW_COPY.landingHeading,
       FLOW_COPY.landingSub,
       FLOW_COPY.connectCard,
       FLOW_COPY.modalTitle,

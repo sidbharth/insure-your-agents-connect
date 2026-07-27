@@ -581,7 +581,6 @@ export const CLAIM_DEMO_SCENARIOS: ClaimDemoScenarioCopy[] = [
 // ---------------------------------------------------------------------------
 
 export const FLOW_COPY = {
-  landingHeading: 'Insurance for the agents that move your money.',
   landingSub: 'Connect your agents to see what cover they qualify for.',
   connectCard: 'Connect with AgentConnect',
   modalTitle: 'Connect your agents',
