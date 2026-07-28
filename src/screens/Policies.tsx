@@ -341,7 +341,7 @@ export default function Policies() {
                   claimsBlockRefund={
                     incidents.some((i) => i.agentId === row.agent.id)
                   }
-                  onEditMandate={() => navigate(`/mandate?edit=${row.agent.id}`)}
+                  onEditMandate={() => navigate(`/rules/${row.agent.id}`)}
                   onCure={() => cure(row)}
                   onAdopt={(c) => adoptControl(row, c)}
                   onControlVerified={(c) => onControlVerified(row, c)}

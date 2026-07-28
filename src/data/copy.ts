@@ -499,6 +499,44 @@ export const FLOW_TERMS: FlowTermsPage[] = [
   },
 ];
 
+/**
+ * Spending rules page (route /rules/:agentId) — the variant's self-serve
+ * replacement for the wizard's mandate editor. Same punctuation rules as
+ * FLOW_COPY.
+ */
+export const RULES_COPY = {
+  title: 'Spending rules',
+  sub: (name: string) =>
+    `These rules decide what ${name} may do with money. If the agent ever moves money outside them, Coverage A pays you back, so tighter rules mean stronger protection.`,
+  coverLabel: 'Per payment limit',
+  coverNote:
+    'This is also the agent’s cover amount, sized by its NEAR stack. Adding stack products raises it.',
+  limitsTitle: 'Spending limits',
+  daily: 'Daily limit',
+  monthly: 'Thirty day limit',
+  limitsNote: 'Payments that would break these limits are blocked before any money moves.',
+  payeesTitle: 'Approved payees',
+  payeesNote:
+    'Your agent can only pay people on this list. A new payee waits 24 hours before its first payment.',
+  payeeName: 'Name',
+  payeeAddress: 'Address',
+  addPayee: 'Add payee',
+  remove: 'Remove',
+  cooling: 'in the 24 hour wait',
+  approvalTitle: 'Human approval',
+  approvalLabel: 'Ask a person for payments above',
+  approvalNote: 'Anything above this amount waits for a person to approve before it moves.',
+  review: 'Review changes →',
+  changesTitle: 'What changes',
+  noChanges: 'Nothing has changed yet.',
+  apply: 'Apply the new rules',
+  back: 'Back',
+  theaterTitle: 'Updating the rules',
+  steps: ['Recording the new rules…', 'Countersigning…', 'Bringing them into force…'],
+  addedPayee: (name: string) => `Added payee ${name}`,
+  removedPayee: (name: string) => `Removed payee ${name}`,
+} as const;
+
 export interface ClaimDemoScenarioCopy {
   scenarioId: ScenarioId;
   title: string;
