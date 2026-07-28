@@ -58,7 +58,7 @@ afterEach(() => {
 describe('7.9 dashboard — rows', () => {
   it('shows the empty state before any enrollment', () => {
     renderPolicies();
-    expect(screen.getByText(/No policies yet/i)).toBeInTheDocument();
+    expect(screen.getByText(/No cover yet/i)).toBeInTheDocument();
   });
 
   it('renders one row per enrolled agent with cap, rate, premium and status', () => {
@@ -141,7 +141,7 @@ describe('AC-11 — near-miss reporting and renewal preview', () => {
     fireEvent.click(screen.getByTestId('report-near-miss'));
     expect(screen.getByTestId('row-renewal-preview').textContent).toMatch(/0\.54%/);
     expect(screen.getByTestId('row-renewal-preview').textContent).toMatch(
-      /−0\.01% × 1 near-miss credit/,
+      /−0\.01% × 1 in near miss credits/,
     );
 
     fireEvent.click(screen.getByTestId('report-near-miss'));
@@ -188,7 +188,7 @@ describe('REQ-7.2.2 — verification nudge with pro-rata refund', () => {
       expect(screen.getByTestId('verification-refund')).toBeInTheDocument(),
     );
     expect(screen.getByTestId('verification-refund').textContent).toMatch(
-      /pro rata from the verification date/i,
+      /unused part of the 0\.4% surcharge/i,
     );
     expect(screen.queryByTestId('dashboard-verify-strip')).not.toBeInTheDocument();
     const history = useStore.getState().operator.verificationHistory;
@@ -205,7 +205,7 @@ describe('§9b — de-enroll', () => {
     fireEvent.click(screen.getByTestId('de-enroll'));
     const confirm = screen.getByTestId('de-enroll-confirm');
     expect(confirm.textContent).toMatch(/past events remain claimable/i);
-    expect(confirm.textContent).toMatch(/pro rata/i);
+    expect(confirm.textContent).toMatch(/unused part of the yearly price/i);
     expect(screen.queryByTestId('de-enroll-zero-refund')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByTestId('de-enroll-confirm-button'));
@@ -223,11 +223,11 @@ describe('§9b — de-enroll', () => {
 
     fireEvent.click(screen.getByTestId('de-enroll'));
     const zero = screen.getByTestId('de-enroll-zero-refund');
-    expect(zero.textContent).toMatch(/\$0/);
+    expect(zero.textContent).toMatch(/no refund because a claim/i);
     expect(zero.textContent).toMatch(/claim has been paid or noticed/i);
 
     fireEvent.click(screen.getByTestId('de-enroll-confirm-button'));
-    expect(screen.getByTestId('de-enroll-note').textContent).toMatch(/\$0/);
+    expect(screen.getByTestId('de-enroll-note').textContent).toMatch(/no refund because a claim/i);
   });
 });
 

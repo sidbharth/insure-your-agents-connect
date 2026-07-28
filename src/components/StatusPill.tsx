@@ -28,7 +28,7 @@ export function StatusPill({ status, reason, className = '' }: StatusPillProps) 
       title={reason}
       className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-2xs font-semibold ${STYLES[status]} ${className}`}
     >
-      {status}
+      {status === 'De-enrolled' ? 'Ended' : status}
       {status === 'Suspended' && reason ? (
         <span className="font-normal">({reason})</span>
       ) : null}
