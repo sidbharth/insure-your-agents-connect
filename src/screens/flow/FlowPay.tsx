@@ -1,12 +1,10 @@
 /**
  * Connect flow, final step — payment (route /flow/pay), reached after the
- * signature. Two settlement options: pay upfront (settled now in $NEAR) or
- * pay with stake (recommended; rewards fund the premium). Each option runs
- * its own confirmation and settlement demo, then cover activates and the
- * flow lands on the policies dashboard.
- *
- * Stake today records the choice and settles through the same payment port
- * as upfront; the real staking mechanics arrive in a later iteration.
+ * signature. One option: pay the yearly price upfront in $NEAR at the live
+ * rate. Paying earns NEAR AI credits at 25% of the spend, shown both on the
+ * option card and computed for the actual payment on the confirmation.
+ * Confirming settles through the payment port, activates cover, and lands
+ * on the cover dashboard.
  */
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -16,21 +14,16 @@ import { FLOW_COPY } from '../../data/copy';
 import { formatN, formatUsd, usdToN } from '../../lib/money';
 import { executePayment, PaymentAbortedError } from '../../lib/payments';
 import { useStore } from '../../store';
-import {
-  getSelectedAgentIds,
-  isSigned,
-  setPaymentMethod,
-  type FlowPaymentMethod,
-} from './flowState';
+import { getSelectedAgentIds, isSigned, setPaymentMethod } from './flowState';
 
-/** Stake sized so a 10% reward rate funds the premium in full. */
-const STAKE_REWARD_RATE = 0.1;
+/** NEAR AI credits earned per dollar of cover spend. */
+const CREDIT_RATE = 0.25;
 
 export default function FlowPay() {
   const enrollments = useStore((s) => s.enrollments);
   const usdPerN = useStore((s) => s.priceFeed.usdPerN);
   const navigate = useNavigate();
-  const [phase, setPhase] = useState<'choose' | FlowPaymentMethod>('choose');
+  const [confirming, setConfirming] = useState(false);
   const [processing, setProcessing] = useState(false);
   const selected = getSelectedAgentIds();
 
@@ -45,11 +38,11 @@ export default function FlowPay() {
     .filter((e) => selected.includes(e.agentId) && e.terminatedAt === undefined)
     .reduce((a, e) => a + e.premiumUsd, 0);
   const premiumN = usdToN(totalPremiumUsd, usdPerN);
-  const stakeN = premiumN / STAKE_REWARD_RATE;
+  const creditUsd = totalPremiumUsd * CREDIT_RATE;
 
-  const choose = (method: FlowPaymentMethod) => {
-    setPaymentMethod(method);
-    setPhase(method);
+  const choose = () => {
+    setPaymentMethod('upfront');
+    setConfirming(true);
   };
 
   const finalize = async () => {
@@ -72,59 +65,36 @@ export default function FlowPay() {
     <div className="mx-auto max-w-shell px-6 py-8" data-testid="screen-FlowPay">
       <div className="mb-4">
         <h1 className="text-lg font-bold tracking-tight text-ink">{FLOW_COPY.payTitle}</h1>
-        <p className="mt-1 max-w-2xl text-sm text-muted">{FLOW_COPY.paySub}</p>
+        <p className="mt-1 max-w-2xl text-sm text-body">{FLOW_COPY.paySub}</p>
       </div>
 
-      {phase === 'choose' && (
-        <div className="grid max-w-3xl grid-cols-1 gap-3 sm:grid-cols-2">
-          <div className="flex flex-col rounded-card border border-line bg-panel p-5 shadow-card">
-            <div className="text-sm font-semibold text-ink">{FLOW_COPY.payUpfrontTitle}</div>
-            <p className="mt-1 flex-1 text-xs text-muted">{FLOW_COPY.payUpfrontBody}</p>
-            <button
-              type="button"
-              data-testid="pay-upfront"
-              onClick={() => choose('upfront')}
-              className="mt-4 self-start rounded-lg bg-accent px-3.5 py-2 text-sm font-semibold text-ink"
-            >
-              {FLOW_COPY.payChoose}
-            </button>
-          </div>
-          <div className="relative flex flex-col rounded-card border-2 border-[#0b7a52] bg-panel p-5 shadow-card">
-            <span
-              data-testid="pay-stake-recommended"
-              className="absolute -top-2.5 right-4 rounded-full bg-[#0b7a52] px-2.5 py-0.5 text-2xs font-bold uppercase tracking-wider text-white"
-            >
-              {FLOW_COPY.payRecommended}
-            </span>
-            <div className="text-sm font-semibold text-ink">{FLOW_COPY.payStakeTitle}</div>
-            <p className="mt-1 flex-1 text-xs text-muted">{FLOW_COPY.payStakeBody}</p>
-            <div className="mt-4 flex flex-wrap items-center gap-2.5">
-              <button
-                type="button"
-                data-testid="pay-stake"
-                onClick={() => choose('stake')}
-                className="rounded-lg bg-accent px-3.5 py-2 text-sm font-semibold text-ink"
-              >
-                {FLOW_COPY.payChoose}
-              </button>
-              <span
-                data-testid="pay-stake-credit"
-                className="inline-flex rounded border border-good-line bg-good-bg px-2 py-1 text-2xs font-semibold text-good"
-              >
-                {FLOW_COPY.payStakeCredit}
-              </span>
-            </div>
-          </div>
+      {!confirming ? (
+        <div className="relative max-w-xl rounded-card border-2 border-[#0b7a52] bg-panel p-5 shadow-card">
+          <span
+            data-testid="pay-credit-tag"
+            className="absolute -top-2.5 right-4 rounded-full bg-[#0b7a52] px-2.5 py-0.5 text-2xs font-bold uppercase tracking-wider text-white"
+          >
+            {FLOW_COPY.payCreditTag}
+          </span>
+          <div className="text-sm font-semibold text-ink">{FLOW_COPY.payUpfrontTitle}</div>
+          <p className="mt-1 text-xs text-body">{FLOW_COPY.payUpfrontBody}</p>
+          <p className="mt-2 text-xs text-body" data-testid="pay-credit-body">
+            {FLOW_COPY.payCreditBody}
+          </p>
+          <button
+            type="button"
+            data-testid="pay-upfront"
+            onClick={choose}
+            className="mt-4 rounded-lg bg-accent px-3.5 py-2 text-sm font-semibold text-ink"
+          >
+            {FLOW_COPY.payChoose}
+          </button>
         </div>
-      )}
-
-      {phase !== 'choose' && (
+      ) : (
         <div className="max-w-xl rounded-card border border-line bg-panel p-5 shadow-card">
           <div className="flex items-start justify-between gap-3">
             <h2 className="text-md font-semibold text-ink">
-              {phase === 'upfront'
-                ? FLOW_COPY.payConfirmUpfrontTitle
-                : FLOW_COPY.payConfirmStakeTitle}
+              {FLOW_COPY.payConfirmUpfrontTitle}
             </h2>
             <SimulatedBadge />
           </div>
@@ -138,33 +108,21 @@ export default function FlowPay() {
               label={FLOW_COPY.payLabels.settlesAs}
               value={formatN(premiumN, { maxFractionDigits: 1 })}
             />
-            {phase === 'stake' && (
-              <Cell
-                label={FLOW_COPY.payLabels.stake}
-                value={formatN(stakeN, { maxFractionDigits: 0 })}
-              />
-            )}
+            <Cell
+              label={FLOW_COPY.payLabels.credits}
+              value={formatUsd(creditUsd)}
+            />
           </div>
 
-          {phase === 'stake' && (
-            <p className="mt-3 text-xs text-muted" data-testid="stake-note">
-              {FLOW_COPY.payStakeEstimate(formatN(stakeN, { maxFractionDigits: 0 }))}{' '}
-              {FLOW_COPY.payStakeNote}
-            </p>
-          )}
+          <p className="mt-3 text-xs text-body" data-testid="pay-credit-earn">
+            {FLOW_COPY.payCreditEarn(formatUsd(creditUsd))}
+          </p>
 
           {processing ? (
             <LatencyTheater
               className="mt-4"
-              title={
-                phase === 'upfront'
-                  ? FLOW_COPY.payUpfrontTheaterTitle
-                  : FLOW_COPY.payStakeTheaterTitle
-              }
-              steps={(phase === 'upfront'
-                ? FLOW_COPY.payUpfrontSteps
-                : FLOW_COPY.payStakeSteps
-              ).map((label) => ({ label }))}
+              title={FLOW_COPY.payUpfrontTheaterTitle}
+              steps={FLOW_COPY.payUpfrontSteps.map((label) => ({ label }))}
               totalMs={3000}
               onDone={() => {
                 void finalize();
@@ -175,8 +133,8 @@ export default function FlowPay() {
               <button
                 type="button"
                 data-testid="pay-back"
-                onClick={() => setPhase('choose')}
-                className="text-sm font-semibold text-muted"
+                onClick={() => setConfirming(false)}
+                className="text-sm font-semibold text-body"
               >
                 {FLOW_COPY.payBack}
               </button>
@@ -186,9 +144,7 @@ export default function FlowPay() {
                 onClick={() => setProcessing(true)}
                 className="rounded-lg bg-accent px-3.5 py-2 text-sm font-semibold text-ink"
               >
-                {phase === 'upfront'
-                  ? FLOW_COPY.payConfirmUpfront
-                  : FLOW_COPY.payConfirmStake}
+                {FLOW_COPY.payConfirmUpfront}
               </button>
             </div>
           )}
@@ -201,7 +157,7 @@ export default function FlowPay() {
 function Cell({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div className="text-2xs font-bold uppercase tracking-wider text-faint">{label}</div>
+      <div className="text-2xs font-bold uppercase tracking-wider text-ink">{label}</div>
       <div className="num mt-0.5 text-sm font-semibold text-ink">{value}</div>
     </div>
   );

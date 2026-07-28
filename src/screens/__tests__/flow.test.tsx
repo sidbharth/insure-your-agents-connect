@@ -265,15 +265,19 @@ describe('disclosures, signing, and payment', () => {
     await connectAgents(['procurement-bot', 'payables-bot']);
     await agreeAndSign();
 
-    // The stake option is highlighted as recommended with the credits tag.
-    expect(screen.getByTestId('pay-stake-recommended')).toHaveTextContent(
-      FLOW_COPY.payRecommended,
+    // A single upfront option carrying the NEAR AI credits incentive.
+    expect(screen.getByTestId('pay-credit-tag')).toHaveTextContent(
+      FLOW_COPY.payCreditTag,
     );
-    expect(screen.getByTestId('pay-stake-credit')).toHaveTextContent(
-      FLOW_COPY.payStakeCredit,
+    expect(screen.getByTestId('pay-credit-body')).toHaveTextContent(
+      FLOW_COPY.payCreditBody,
     );
 
     fireEvent.click(screen.getByTestId('pay-upfront'));
+    // procurement $300 + payables $400 = $700, earning 25% back: $175.
+    expect(screen.getByTestId('pay-credit-earn')).toHaveTextContent(
+      FLOW_COPY.payCreditEarn('$175'),
+    );
     fireEvent.click(screen.getByTestId('pay-confirm'));
     await waitFor(() =>
       expect(screen.getByTestId('screen-Policies')).toBeInTheDocument(),
@@ -281,14 +285,15 @@ describe('disclosures, signing, and payment', () => {
     expectActivated(['procurement-bot', 'payables-bot']);
   });
 
-  it('pay with stake runs the staking demo and activates cover', async () => {
+  it('a single agent payment shows its own credits and activates cover', async () => {
     await connectAgents(['treasury-bot']);
     await agreeAndSign();
 
-    fireEvent.click(screen.getByTestId('pay-stake'));
-    // Yearly price $480 at the pinned $3.00 rate; stake sized at a 10%
-    // reward rate is (480 / 3) / 0.1 = 1,600 $NEAR.
-    expect(screen.getByTestId('stake-note')).toHaveTextContent('1,600');
+    fireEvent.click(screen.getByTestId('pay-upfront'));
+    // Yearly price $480 earns 25% back as NEAR AI credits: $120.
+    expect(screen.getByTestId('pay-credit-earn')).toHaveTextContent(
+      FLOW_COPY.payCreditEarn('$120'),
+    );
     fireEvent.click(screen.getByTestId('pay-confirm'));
     await waitFor(() =>
       expect(screen.getByTestId('screen-Policies')).toBeInTheDocument(),
@@ -398,22 +403,15 @@ describe('copy rules', () => {
       FLOW_COPY.paySub,
       FLOW_COPY.payUpfrontTitle,
       FLOW_COPY.payUpfrontBody,
-      FLOW_COPY.payStakeTitle,
-      FLOW_COPY.payStakeBody,
       FLOW_COPY.payChoose,
-      FLOW_COPY.payRecommended,
-      FLOW_COPY.payStakeCredit,
+      FLOW_COPY.payCreditTag,
+      FLOW_COPY.payCreditBody,
+      FLOW_COPY.payCreditEarn('$175'),
       FLOW_COPY.payConfirmUpfrontTitle,
-      FLOW_COPY.payConfirmStakeTitle,
-      FLOW_COPY.payStakeNote,
-      FLOW_COPY.payStakeEstimate('1,833 $NEAR'),
       FLOW_COPY.payConfirmUpfront,
-      FLOW_COPY.payConfirmStake,
       FLOW_COPY.payBack,
       FLOW_COPY.payUpfrontTheaterTitle,
       ...FLOW_COPY.payUpfrontSteps,
-      FLOW_COPY.payStakeTheaterTitle,
-      ...FLOW_COPY.payStakeSteps,
       ...Object.values(FLOW_COPY.payLabels),
       FLOW_COPY.termsProgress(3),
       FLOW_COPY.termsSub,

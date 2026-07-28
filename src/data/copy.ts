@@ -636,41 +636,29 @@ export const FLOW_COPY = {
   claimsBody:
     'You can file as many claims as you need, and each incident carries its own share. The one grouping rule is that losses tracing back to the same root cause count as one incident, with one limit and one share.',
   payTitle: 'Payment',
-  paySub: 'Choose how to pay for the year.',
+  paySub: 'One payment puts your cover in force for the year.',
   payUpfrontTitle: 'Pay upfront',
   payUpfrontBody: 'Pay the yearly price now in $NEAR at the live rate.',
-  payStakeTitle: 'Pay with stake',
-  payStakeBody: 'Stake $NEAR and let the rewards pay for your cover through the year.',
   payChoose: 'Choose →',
-  payRecommended: 'Recommended',
-  payStakeCredit: 'Get $1000 in NEAR AI credits',
+  payCreditTag: 'Get FREE NEAR AI credits',
+  payCreditBody:
+    'For every $1,000 you spend on cover, you get $250 back as NEAR AI credits to spend on AI inference.',
+  payCreditEarn: (amount: string) =>
+    `This payment earns you ${amount} in NEAR AI credits.`,
   payConfirmUpfrontTitle: 'Confirm payment',
-  payConfirmStakeTitle: 'Confirm stake',
-  payStakeNote:
-    'Rewards from your stake pay for the cover as the year runs, and the stake itself stays yours.',
-  payStakeEstimate: (stake: string) =>
-    `${stake} staked at a 10% reward rate covers the yearly price in full.`,
   payConfirmUpfront: 'Confirm payment →',
-  payConfirmStake: 'Confirm stake →',
-  payBack: 'Back to payment options',
-  payUpfrontTheaterTitle: 'Settling the premium',
+  payBack: 'Back',
+  payUpfrontTheaterTitle: 'Settling the payment',
   payUpfrontSteps: [
     'Fetching the live rate…',
     'Converting the yearly price…',
     'Debiting the wallet…',
     'Recording the payment…',
   ],
-  payStakeTheaterTitle: 'Setting up the stake',
-  payStakeSteps: [
-    'Locking stake with the programme validator…',
-    'Routing rewards to your payment plan…',
-    'Recording the funding plan…',
-    'Attaching cover…',
-  ],
   payLabels: {
     premium: 'Yearly price',
     settlesAs: 'Settles as',
-    stake: 'Estimated stake',
+    credits: 'NEAR AI credits',
   },
   termsProgress: (n: number) => `Part ${n} of 5`,
   termsSub:

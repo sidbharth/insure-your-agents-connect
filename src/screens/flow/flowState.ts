@@ -7,7 +7,7 @@
  * the same machinery the original wizard used.
  */
 
-export type FlowPaymentMethod = 'upfront' | 'stake';
+export type FlowPaymentMethod = 'upfront';
 
 /** The five connectable agents, in modal order. Handles are the seed names. */
 export const CONNECTABLE_AGENT_IDS: readonly string[] = [
