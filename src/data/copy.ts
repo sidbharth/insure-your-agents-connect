@@ -510,7 +510,7 @@ export const RULES_COPY = {
     `These rules decide what ${name} may do with money. If the agent ever moves money outside them, Coverage A pays you back, so tighter rules mean stronger protection.`,
   coverLabel: 'Per payment limit',
   coverNote:
-    'This is also the agent’s cover amount, sized by its NEAR stack. Adding stack products raises it.',
+    'This is also the agent’s cover amount. It depends on which NEAR products the agent uses, and adding more raises it.',
   limitsTitle: 'Spending limits',
   daily: 'Daily limit',
   monthly: 'Thirty day limit',
@@ -645,9 +645,9 @@ export const FLOW_COPY = {
   },
   quoteUpTo: 'up to',
   quoteCoverEachSub:
-    'Each agent carries its own separate cover, sized by its stack. A payout for one agent never reduces another agent’s cover.',
+    'Each agent has its own separate cover, based on the NEAR products it uses. A payout for one agent never reduces another agent’s cover.',
   coverMapTitle: 'What this agent is covered for',
-  stackTitle: 'Recommended NEAR stack',
+  stackTitle: 'Recommended NEAR products',
   stackSource:
     'Checked against the agent’s registered harness and the tools it connected with.',
   stackBase: 'Base cover',
@@ -659,7 +659,7 @@ export const FLOW_COPY = {
   },
   stackCoverAmount: 'Cover this agent qualifies for',
   stackFull:
-    'This agent runs the full recommended NEAR stack, so it qualifies for the highest cover we offer.',
+    'This agent uses all the recommended NEAR products, so it qualifies for the highest cover we offer.',
   stackUpsell: (items: string, amount: string) =>
     `Add ${items} to raise this agent’s cover to ${amount}.`,
   coverMapExcluded: 'excluded',
@@ -709,7 +709,7 @@ export const FLOW_COPY = {
   termsNotCovered: 'What is not covered',
   termsPayment: 'How payouts work',
   termsLimit: 'The most one incident pays',
-  termsLimitPerAgent: 'for your highest specced agent',
+  termsLimitPerAgent: 'for the agent with the most cover',
   termsAgree: 'Agree and continue →',
   signTitle: 'Signature',
   signSub: 'One last look, then sign to put your cover in force.',

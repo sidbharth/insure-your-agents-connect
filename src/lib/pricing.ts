@@ -207,7 +207,7 @@ export function priceAgent(input: PricingInput): PricingResult {
   if (offStack > 0) {
     loadingTenths += offStack;
     breakdown.push({
-      label: `Off the recommended NEAR stack (${offStack} of 3 products missing)`,
+      label: `Missing ${offStack} of the 3 recommended NEAR products`,
       points: offStack / 10,
       clause: 'Recommended spec',
       group: 'loading',

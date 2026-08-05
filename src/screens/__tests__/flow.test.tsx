@@ -127,7 +127,7 @@ describe('quote', () => {
     expect(legacy).toHaveTextContent('No TEE attestation');
     expect(legacy).toHaveTextContent(FLOW_COPY.quoteBExcluded);
     // Off-spec agents pay a loaded rate on top of their lower cover.
-    expect(legacy).toHaveTextContent('Off the recommended NEAR stack (3 of 3 products missing)');
+    expect(legacy).toHaveTextContent('Missing 3 of the 3 recommended NEAR products');
     expect(legacy).toHaveTextContent('1.5% × $15,000 = $225');
   });
 
