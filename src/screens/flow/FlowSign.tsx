@@ -11,13 +11,10 @@ import { LatencyTheater } from '../../components/LatencyTheater';
 import { SimulatedBadge } from '../../components/SimulatedBadge';
 import { EXCLUSION_WALL, FLOW_COPY } from '../../data/copy';
 import { formatUsd } from '../../lib/money';
-import { useStore } from '../../store';
-import { capUsdFor } from '../purchase/enroll';
+import { agentCoverUsd, agentPriceUsd, COVER_LETTERS } from './coverage';
 import { getAgreedPages, getSelectedAgentIds, markSigned } from './flowState';
 
 export default function FlowSign() {
-  const enrollments = useStore((s) => s.enrollments);
-  const state = useStore((s) => s);
   const navigate = useNavigate();
   const [signing, setSigning] = useState(false);
   const [acknowledged, setAcknowledged] = useState(false);
@@ -26,17 +23,15 @@ export default function FlowSign() {
   // The signature page is reachable only after all five coverages are agreed.
   useEffect(() => {
     if (selected.length === 0) navigate('/', { replace: true });
-    else if (getAgreedPages() < 5) navigate(`/flow/terms/${getAgreedPages() + 1}`, { replace: true });
+    else if (getAgreedPages() < COVER_LETTERS.length)
+      navigate(`/flow/review/${getAgreedPages() + 1}`, { replace: true });
   }, [selected.length, navigate]);
-  if (selected.length === 0 || getAgreedPages() < 5) return null;
+  if (selected.length === 0 || getAgreedPages() < COVER_LETTERS.length) return null;
 
-  const live = enrollments.filter(
-    (e) => selected.includes(e.agentId) && e.terminatedAt === undefined,
-  );
   const maxCoverUsd = selected.length
-    ? Math.max(...selected.map((id) => capUsdFor(state, id)))
+    ? Math.max(...selected.map((id) => agentCoverUsd(id)))
     : 0;
-  const totalPremiumUsd = live.reduce((a, e) => a + e.premiumUsd, 0);
+  const totalPremiumUsd = selected.reduce((a, id) => a + agentPriceUsd(id).priceUsd, 0);
 
   return (
     <div className="mx-auto max-w-shell px-6 py-8" data-testid="screen-FlowSign">

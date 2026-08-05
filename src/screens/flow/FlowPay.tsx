@@ -14,13 +14,13 @@ import { FLOW_COPY } from '../../data/copy';
 import { formatN, formatUsd, usdToN } from '../../lib/money';
 import { executePayment, PaymentAbortedError } from '../../lib/payments';
 import { useStore } from '../../store';
+import { agentPriceUsd } from './coverage';
 import { getSelectedAgentIds, isSigned, setPaymentMethod } from './flowState';
 
 /** NEAR AI credits earned per dollar of cover spend. */
 const CREDIT_RATE = 0.25;
 
 export default function FlowPay() {
-  const enrollments = useStore((s) => s.enrollments);
   const usdPerN = useStore((s) => s.priceFeed.usdPerN);
   const navigate = useNavigate();
   const [confirming, setConfirming] = useState(false);
@@ -34,9 +34,10 @@ export default function FlowPay() {
   }, [selected.length, navigate]);
   if (selected.length === 0 || !isSigned()) return null;
 
-  const totalPremiumUsd = enrollments
-    .filter((e) => selected.includes(e.agentId) && e.terminatedAt === undefined)
-    .reduce((a, e) => a + e.premiumUsd, 0);
+  const totalPremiumUsd = selected.reduce(
+    (a, id) => a + agentPriceUsd(id).priceUsd,
+    0,
+  );
   const premiumN = usdToN(totalPremiumUsd, usdPerN);
   const creditUsd = totalPremiumUsd * CREDIT_RATE;
 

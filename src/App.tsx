@@ -30,10 +30,9 @@ import Controls from './screens/Controls';
 import Coverage from './screens/Coverage';
 import Fleet from './screens/Fleet';
 import FlowPay from './screens/flow/FlowPay';
-import FlowQuote from './screens/flow/FlowQuote';
+import FlowReview from './screens/flow/FlowReview';
+import FlowSummary from './screens/flow/FlowSummary';
 import FlowSign from './screens/flow/FlowSign';
-import FlowTerms from './screens/flow/FlowTerms';
-import RulesEdit from './screens/flow/RulesEdit';
 import Mandate from './screens/Mandate';
 import Pay from './screens/Pay';
 import Policies from './screens/Policies';
@@ -209,11 +208,10 @@ export function AppShell() {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<ConnectLanding />} />
-          <Route path="/flow/quote" element={<FlowQuote />} />
+          <Route path="/flow/review/:page" element={<FlowReview />} />
+          <Route path="/flow/summary" element={<FlowSummary />} />
           <Route path="/flow/pay" element={<FlowPay />} />
-          <Route path="/flow/terms/:page" element={<FlowTerms />} />
           <Route path="/flow/sign" element={<FlowSign />} />
-          <Route path="/rules/:agentId" element={<RulesEdit />} />
           <Route path="/verify" element={<VerifyCompany />} />
           <Route path="/review" element={<PrincipalReview />} />
           <Route path="/connect" element={<ConnectAgent />} />

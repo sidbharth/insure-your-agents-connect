@@ -537,6 +537,41 @@ export const RULES_COPY = {
   removedPayee: (name: string) => `Removed payee ${name}`,
 } as const;
 
+/**
+ * Coverage walkthrough (routes /flow/review/:page) — one page per coverage,
+ * showing what the agent's AgentConnect settings earn it and what would close
+ * the gaps. Same punctuation rules as FLOW_COPY.
+ */
+export const REVIEW_COPY = {
+  progress: (n: number) => `Coverage ${n} of 5`,
+  sub: 'We checked your agents against what this coverage needs.',
+  yourSetup: 'What we found',
+  earns: 'What this agent gets',
+  fullNote: 'Every account qualifies, so this agent gets the full amount.',
+  partialNote: (qualifying: number, total: number) =>
+    `${qualifying} of ${total} accounts qualify, so this agent gets that share of the amount.`,
+  noneNote: 'No account qualifies yet, so there is nothing to pay out on this coverage.',
+  fixTitle: 'Raise this cover',
+  fixNow: 'Fix now',
+  fixed: 'Fixed',
+  accountCovered: 'covered',
+  accountNotCovered: 'not covered yet',
+  agree: 'Agree and continue →',
+  back: 'Back',
+  summaryTitle: 'Your cover',
+  summarySub: (agents: string) =>
+    `We reviewed ${agents} and checked every account against each coverage. Here is what your setup earns.`,
+  summaryCoverage: 'Coverage',
+  summaryAgent: 'Agent',
+  summaryTotal: 'Yearly price',
+  summaryAccept: 'Accept and continue to signing →',
+  summaryGaps: (n: number) =>
+    n === 1
+      ? 'One gap is still open. Closing it raises your cover and lowers your price.'
+      : `${n} gaps are still open. Closing them raises your cover and lowers your price.`,
+  summaryClean: 'Every coverage is fully earned across your agents.',
+} as const;
+
 export interface ClaimDemoScenarioCopy {
   scenarioId: ScenarioId;
   title: string;
